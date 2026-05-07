@@ -13,13 +13,13 @@
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; }
         
-        .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .header { background: white; padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
+        .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
+        .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
         
         #groupDashboard { display: none; background: #f9f9f9; padding: 15px; border-bottom: 1px solid #ddd; max-height: 250px; overflow-y: auto; font-size: 0.8em; }
         .dash-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
 
-        .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #555; font-size: 0.9em; }
+        .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #555; }
         
         .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 10px; margin-bottom: 10px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 1s ease; }
@@ -30,12 +30,11 @@
         .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 15px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
         .btn-filter.active { background: var(--usa-blue); color: white; border-color: var(--usa-blue); }
 
-        /* LISTA VISUAL DE REPETIDAS (QUE TINHA SUMIDO) */
         #visualRepeatList { 
             background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; 
-            margin-top: 10px; font-family: monospace; font-size: 0.85em; 
+            margin: 10px auto; font-family: monospace; font-size: 0.85em; 
             color: var(--repeat); font-weight: bold; word-break: break-all;
-            border: 1px dashed #ccc;
+            border: 1px dashed #ccc; width: 90%; max-width: 600px;
         }
 
         .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; padding: 20px; }
@@ -48,20 +47,20 @@
         .section:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); border-bottom-color: var(--usa-blue); }
         .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         
-        .team-count { font-size: 0.7em; padding: 2px 8px; border-radius: 10px; background: #eee; }
+        .team-count { font-size: 0.75em; padding: 2px 8px; border-radius: 10px; background: #eee; color: #666; }
         .team-count.complete { background: var(--mex-green); color: white; }
 
         .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; }
+        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; transition: 0.2s; color: #444; }
         .s.have { background: var(--have) !important; color: white !important; border: none; }
         .s.repeat { background: var(--repeat) !important; color: white !important; border: none; }
         
         .group-title { color: var(--usa-blue); font-size: 1.6em; font-weight: 900; text-align: center; padding: 20px 0; text-transform: uppercase; }
         
-        .backup-controls { margin-top: 15px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
+        .backup-controls { margin-top: 15px; display: flex; justify-content: center; gap: 5px; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; color: #666; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
         
-        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; }
+        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; }
     </style>
 </head>
 <body>
@@ -71,12 +70,12 @@
         <div style="font-size: 2.2em; font-weight: 900; line-height: 1;">
             <span style="color: var(--usa-blue);">COPA</span> 26
         </div>
-        <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888; text-transform: uppercase;">
+        <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888; text-transform: uppercase; margin-top: 5px;">
             <span style="color: var(--can-red);">TRAC</span><span style="color: var(--mex-green);">KER</span>
         </div>
         
         <div class="progress-container" style="margin-top:15px"><div class="progress-bar" id="pb"></div></div>
-        <div id="stats"></div>
+        <div id="stats">Calculando...</div>
         
         <div class="backup-controls">
             <button class="btn-action" onclick="toggleDashboard()">DETALHES</button>
@@ -89,10 +88,8 @@
     <div id="groupDashboard"></div>
 
     <div class="repeat-panel">
-        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção (ex: Brasil, MEX...)" oninput="render()" style="width: 80%; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none;">
-        
-        <div id="visualRepeatList">Carregando repetidas...</div>
-
+        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção (ex: Brasil, MEX...)" oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; margin-bottom: 5px;">
+        <div id="visualRepeatList">Nenhuma repetida.</div>
         <div class="filter-bar">
             <button class="btn-filter active" id="fAll" onclick="setFilter('all')">TUDO</button>
             <button class="btn-filter" id="fMissing" onclick="setFilter('missing')">FALTAM</button>
@@ -103,7 +100,7 @@
 
 <div id="mainContent"></div>
 
-<button id="shareBtn" onclick="generateShareList()">COPIAR LISTA PARA WHATSAPP</button>
+<button id="shareBtn" onclick="generateShareList()">GERAR LISTA WHATSAPP</button>
 
 <script>
     const albumData = [
@@ -122,11 +119,16 @@
         { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
     ];
 
-    let db = JSON.parse(localStorage.getItem('copa2026_ultra_v2')) || {};
+    // USANDO vFinal_Fixed para evitar conflito
+    let db = JSON.parse(localStorage.getItem('copa2026_vFinal_Fixed')) || {};
     let currentFilter = 'all';
 
     function normalizeStr(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
-    function save() { localStorage.setItem('copa2026_ultra_v2', JSON.stringify(db)); render(); }
+    
+    function save() { 
+        localStorage.setItem('copa2026_vFinal_Fixed', JSON.stringify(db)); 
+        render(); 
+    }
     
     function toggle(id) {
         if (!db[id]) db[id] = 'have';
@@ -138,31 +140,87 @@
     function setFilter(f) {
         currentFilter = f;
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        document.getElementById('f' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
+        if(f==='all') document.getElementById('fAll').classList.add('active');
+        if(f==='missing') document.getElementById('fMissing').classList.add('active');
+        if(f==='repeats') document.getElementById('fRepeats').classList.add('active');
         render();
     }
 
     function toggleDashboard() { 
         const d = document.getElementById('groupDashboard');
-        d.style.display = d.style.display === 'block' ? 'none' : 'block';
+        d.style.display = (d.style.display === 'block') ? 'none' : 'block';
     }
 
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) return alert("Nenhuma repetida para copiar!");
-        
-        // Texto formatado com quebras de linha reais
+        if (reps.length === 0) return alert("Nenhuma repetida marcada!");
         let text = "⚽ *MINHAS REPETIDAS - COPA 26*\n\n" + reps.sort().join(", ") + "\n\n_Gerado por Copa 26 Tracker_";
-        
-        const el = document.createElement('textarea');
-        el.value = text;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        alert("Lista copiada com sucesso!");
+        navigator.clipboard.writeText(text).then(() => alert("Lista copiada! Só colar no Whats."));
     }
 
     function exportBackup() { alert(btoa(JSON.stringify(db))); }
-    function importBackup() { let c = prompt("Cole o código:"); if(c){db
+    function importBackup() { let c = prompt("Cole o código:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
+    function resetData() { if(confirm("Apagar tudo?")) {db={};save();location.reload();}}
+
+    function render() {
+        const main = document.getElementById('mainContent');
+        const dash = document.getElementById('groupDashboard');
+        const visualReps = document.getElementById('visualRepeatList');
+        const searchTerm = normalizeStr(document.getElementById('teamSearch').value);
+        
+        main.innerHTML = ''; 
+        dash.innerHTML = '<strong>Progresso por Grupo:</strong>';
+        
+        let totalStickers = 0, totalHave = 0, repArr = [];
+
+        albumData.forEach(g => {
+            let gStickers = 0, gHave = 0, groupVisible = false;
+            const grid = document.createElement('div'); grid.className = 'album-grid';
+
+            g.teams.forEach(team => {
+                let tHave = 0, tHtml = "";
+                const nameMatch = normalizeStr(team.name).includes(searchTerm) || normalizeStr(team.code).includes(searchTerm);
+
+                for(let i=1; i<=team.total; i++) {
+                    totalStickers++; gStickers++;
+                    const id = `${team.code} ${i<10?'0'+i:i}`;
+                    const status = db[id] || '';
+                    if(status === 'have' || status === 'repeat') { totalHave++; gHave++; tHave++; }
+                    if(status === 'repeat') repArr.push(id);
+
+                    let show = true;
+                    if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) show = false;
+                    if(currentFilter === 'repeats' && status !== 'repeat') show = false;
+
+                    if(show && nameMatch) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
+                }
+
+                if(tHtml !== "") {
+                    const sec = document.createElement('div'); sec.className = 'section';
+                    sec.innerHTML = `<h2><span>${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
+                    grid.appendChild(sec);
+                }
+            });
+
+            const perc = ((gHave / gStickers) * 100).toFixed(0);
+            dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${perc}% (${gHave}/${gStickers})</strong></div>`;
+
+            if(groupVisible) {
+                const title = document.createElement('div'); title.className = 'group-title'; title.innerText = g.group;
+                main.appendChild(title); main.appendChild(grid);
+            }
+        });
+
+        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida marcada.";
+        let p = ((totalHave / totalStickers) * 100).toFixed(1);
+        document.getElementById('pb').style.width = p + "%";
+        document.getElementById('stats').innerText = `${totalHave}/${totalStickers} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
+    }
+    
+    // Inicialização forçada
+    document.addEventListener('DOMContentLoaded', render);
+    render();
+</script>
+</body>
+</html>
