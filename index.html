@@ -5,13 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/831/831276.png">
     <title>Copa 26 Tracker - Ultra</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/country-flag-emoji-polyfill@0.1.3/dist/index.css">
+    
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
             --bg: #fdfdfd; --card-bg: #ffffff; --text-dark: #222222;
             --have: #2ecc71; --repeat: #f39c12; 
         }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; }
+        
+        /* Força o uso da fonte de bandeiras em todo o app */
+        body { 
+            font-family: "Twemoji Country Flags", 'Segoe UI', Tahoma, sans-serif; 
+            background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; 
+        }
         
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
         .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
@@ -104,22 +112,21 @@
 
 <script>
     const albumData = [
-        { group: "ESPECIAIS", teams: [{ name: "🚩 Intro", code: "FWC", total: 19 }, { name: "🏛️ Museum", code: "MUS", total: 19 }, { name: "🥤 Coca", code: "CC", total: 12 }]},
-        { group: "GRUPO A", teams: [{ name: "🇲🇽 México", code: "MEX", total: 20 }, { name: "🇿🇦 África do Sul", code: "RSA", total: 20 }, { name: "🇰🇷 Coreia Sul", code: "KOR", total: 20 }, { name: "🇨🇿 Rep. Tcheca", code: "CZE", total: 20 }]},
-        { group: "GRUPO B", teams: [{ name: "🇨🇦 Canadá", code: "CAN", total: 20 }, { name: "🇧🇦 Bósnia", code: "BIH", total: 20 }, { name: "🇶🇦 Catar", code: "QAT", total: 20 }, { name: "🇨🇭 Suíça", code: "SUI", total: 20 }]},
-        { group: "GRUPO C", teams: [{ name: "🇧🇷 Brasil", code: "BRA", total: 20 }, { name: "🇲🇦 Marrocos", code: "MAR", total: 20 }, { name: "🇭🇹 Haiti", code: "HAI", total: 20 }, { name: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escócia", code: "SCO", total: 20 }]},
-        { group: "GRUPO D", teams: [{ name: "🇺🇸 EUA", code: "USA", total: 20 }, { name: "🇵🇾 Paraguai", code: "PAR", total: 20 }, { name: "🇦🇺 Austrália", code: "AUS", total: 20 }, { name: "🇹🇷 Turquia", code: "TUR", total: 20 }]},
-        { group: "GRUPO E", teams: [{ name: "🇩🇪 Alemanha", code: "GER", total: 20 }, { name: "🇨🇼 Curaçao", code: "CUW", total: 20 }, { name: "🇨🇮 Costa do Marfim", code: "CIV", total: 20 }, { name: "🇪🇨 Equador", code: "ECU", total: 20 }]},
-        { group: "GRUPO F", teams: [{ name: "🇳🇱 Holanda", code: "NED", total: 20 }, { name: "🇯🇵 Japão", code: "JPN", total: 20 }, { name: "🇸🇪 Suécia", code: "SWE", total: 20 }, { name: "🇹🇳 Tunísia", code: "TUN", total: 20 }]},
-        { group: "GRUPO G", teams: [{ name: "🇧🇪 Bélgica", code: "BEL", total: 20 }, { name: "🇪🇬 Egito", code: "EGY", total: 20 }, { name: "🇮🇷 Irã", code: "IRN", total: 20 }, { name: "🇳🇿 N. Zelândia", code: "NZL", total: 20 }]},
-        { group: "GRUPO H", teams: [{ name: "🇪🇸 Espanha", code: "ESP", total: 20 }, { name: "🇨🇻 Cabo Verde", code: "CPV", total: 20 }, { name: "🇸🇦 Arábia S.", code: "KSA", total: 20 }, { name: "🇺🇾 Uruguai", code: "URU", total: 20 }]},
-        { group: "GRUPO I", teams: [{ name: "🇫🇷 França", code: "FRA", total: 20 }, { name: "🇸🇳 Senegal", code: "SEN", total: 20 }, { name: "🇮🇶 Iraque", code: "IRQ", total: 20 }, { name: "🇳🇴 Noruega", code: "NOR", total: 20 }]},
-        { group: "GRUPO J", teams: [{ name: "🇦🇷 Argentina", code: "ARG", total: 20 }, { name: "🇩🇿 Argélia", code: "ALG", total: 20 }, { name: "🇦🇹 Áustria", code: "AUT", total: 20 }, { name: "🇯🇴 Jordânia", code: "JOR", total: 20 }]},
-        { group: "GRUPO K", teams: [{ name: "🇵🇹 Portugal", code: "POR", total: 20 }, { name: "🇨🇩 RD Congo", code: "COD", total: 20 }, { name: "🇺🇿 Uzbequistão", code: "UZB", total: 20 }, { name: "🇨🇴 Colômbia", code: "COL", total: 20 }]},
-        { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇬🇷 Grécia", code: "GRE", total: 20 }]}
+        { group: "ESPECIAIS", teams: [{ name: "Intro", code: "FWC", total: 19 }, { name: "Museum", code: "MUS", total: 19 }, { name: "Coca", code: "CC", total: 12 }]},
+        { group: "GRUPO A", teams: [{ name: "México", code: "MEX", total: 20 }, { name: "África do Sul", code: "RSA", total: 20 }, { name: "Coreia Sul", code: "KOR", total: 20 }, { name: "Rep. Tcheca", code: "CZE", total: 20 }]},
+        { group: "GRUPO B", teams: [{ name: "Canadá", code: "CAN", total: 20 }, { name: "Bósnia", code: "BIH", total: 20 }, { name: "Catar", code: "QAT", total: 20 }, { name: "Suíça", code: "SUI", total: 20 }]},
+        { group: "GRUPO C", teams: [{ name: "Brasil", code: "BRA", total: 20 }, { name: "Marrocos", code: "MAR", total: 20 }, { name: "Haiti", code: "HAI", total: 20 }, { name: "Escócia", code: "SCO", total: 20 }]},
+        { group: "GRUPO D", teams: [{ name: "EUA", code: "USA", total: 20 }, { name: "Paraguai", code: "PAR", total: 20 }, { name: "Austrália", code: "AUS", total: 20 }, { name: "Turquia", code: "TUR", total: 20 }]},
+        { group: "GRUPO E", teams: [{ name: "Alemanha", code: "GER", total: 20 }, { name: "Curaçao", code: "CUW", total: 20 }, { name: "Costa do Marfim", code: "CIV", total: 20 }, { name: "Equador", code: "ECU", total: 20 }]},
+        { group: "GRUPO F", teams: [{ name: "Holanda", code: "NED", total: 20 }, { name: "Japão", code: "JPN", total: 20 }, { name: "Suécia", code: "SWE", total: 20 }, { name: "Tunísia", code: "TUN", total: 20 }]},
+        { group: "GRUPO G", teams: [{ name: "Bélgica", code: "BEL", total: 20 }, { name: "Egito", code: "EGY", total: 20 }, { name: "Irã", code: "IRN", total: 20 }, { name: "N. Zelândia", code: "NZL", total: 20 }]},
+        { group: "GRUPO H", teams: [{ name: "Espanha", code: "ESP", total: 20 }, { name: "Cabo Verde", code: "CPV", total: 20 }, { name: "Arábia S.", code: "KSA", total: 20 }, { name: "Uruguai", code: "URU", total: 20 }]},
+        { group: "GRUPO I", teams: [{ name: "França", code: "FRA", total: 20 }, { name: "Senegal", code: "SEN", total: 20 }, { name: "Iraque", code: "IRQ", total: 20 }, { name: "Noruega", code: "NOR", total: 20 }]},
+        { group: "GRUPO J", teams: [{ name: "Argentina", code: "ARG", total: 20 }, { name: "Argélia", code: "ALG", total: 20 }, { name: "Áustria", code: "AUT", total: 20 }, { name: "Jordânia", code: "JOR", total: 20 }]},
+        { group: "GRUPO K", teams: [{ name: "Portugal", code: "POR", total: 20 }, { name: "RD Congo", code: "COD", total: 20 }, { name: "Uzbequistão", code: "UZB", total: 20 }, { name: "Colômbia", code: "COL", total: 20 }]},
+        { group: "GRUPO L", teams: [{ name: "Inglaterra", code: "ENG", total: 20 }, { name: "Croácia", code: "CRO", total: 20 }, { name: "Gana", code: "GHA", total: 20 }, { name: "Grécia", code: "GRE", total: 20 }]}
     ];
 
-    // Mapeamento manual de bandeiras para garantir visual no Chrome/Windows
     const flags = {
         MEX: "🇲🇽", RSA: "🇿🇦", KOR: "🇰🇷", CZE: "🇨🇿",
         CAN: "🇨🇦", BIH: "🇧🇦", QAT: "🇶🇦", SUI: "🇨🇭",
@@ -140,58 +147,33 @@
     let currentFilter = 'all';
 
     function normalizeStr(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
-    
-    function save() { 
-        localStorage.setItem('copa2026_vFinal_Fixed', JSON.stringify(db)); 
-        render(); 
-    }
-    
+    function save() { localStorage.setItem('copa2026_vFinal_Fixed', JSON.stringify(db)); render(); }
     function toggle(id) {
         if (!db[id]) db[id] = 'have';
         else if (db[id] === 'have') db[id] = 'repeat';
         else delete db[id];
         save();
     }
-
     function setFilter(f) {
         currentFilter = f;
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        if(f==='all') document.getElementById('fAll').classList.add('active');
-        if(f==='missing') document.getElementById('fMissing').classList.add('active');
-        if(f==='repeats') document.getElementById('fRepeats').classList.add('active');
+        document.getElementById('f' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
         render();
     }
-
     function toggleDashboard() { 
         const d = document.getElementById('groupDashboard');
         d.style.display = (d.style.display === 'block') ? 'none' : 'block';
     }
-
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
         if (reps.length === 0) return alert("Nenhuma repetida marcada!");
         let text = "⚽ *MINHAS REPETIDAS - COPA 26*\n\n" + reps.sort().join(", ") + "\n\n_Gerado por Copa 26 Tracker_";
-        navigator.clipboard.writeText(text).then(() => alert("Lista copiada! Só colar no Whats."));
+        navigator.clipboard.writeText(text).then(() => alert("Lista copiada!"));
     }
-
-    function exportBackup() { 
-        let code = btoa(JSON.stringify(db));
-        window.prompt("Copie seu código de backup:", code);
-    }
-
-    function importBackup() { 
-        let c = prompt("Cole o código de backup:"); 
-        if(c){
-            try {
-                db = JSON.parse(atob(c)); 
-                save(); 
-                location.reload();
-            } catch(e) { alert("Erro no código!"); }
-        }
-    }
-
-    function resetData() { if(confirm("Apagar tudo?")) {db={};save();location.reload();}}
+    function exportBackup() { window.prompt("Backup:", btoa(JSON.stringify(db))); }
+    function importBackup() { let c = prompt("Cole o código:"); if(c){try{db=JSON.parse(atob(c));save();location.reload();}catch(e){alert("Erro!");}}}
+    function resetData() { if(confirm("Zerar?")) {db={};save();location.reload();}}
 
     function render() {
         const main = document.getElementById('mainContent');
@@ -199,9 +181,7 @@
         const visualReps = document.getElementById('visualRepeatList');
         const searchTerm = normalizeStr(document.getElementById('teamSearch').value);
         
-        main.innerHTML = ''; 
-        dash.innerHTML = '<strong>Progresso por Grupo:</strong>';
-        
+        main.innerHTML = ''; dash.innerHTML = '<strong>Progresso por Grupo:</strong>';
         let totalStickers = 0, totalHave = 0, repArr = [];
 
         albumData.forEach(g => {
@@ -218,11 +198,9 @@
                     const status = db[id] || '';
                     if(status === 'have' || status === 'repeat') { totalHave++; gHave++; tHave++; }
                     if(status === 'repeat') repArr.push(id);
-
                     let show = true;
                     if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) show = false;
                     if(currentFilter === 'repeats' && status !== 'repeat') show = false;
-
                     if(show && nameMatch) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
                 }
 
@@ -236,7 +214,6 @@
 
             const perc = ((gHave / gStickers) * 100).toFixed(0);
             dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${perc}% (${gHave}/${gStickers})</strong></div>`;
-
             if(groupVisible) {
                 const title = document.createElement('div'); title.className = 'group-title'; title.innerText = g.group;
                 main.appendChild(title); main.appendChild(grid);
@@ -248,8 +225,6 @@
         document.getElementById('pb').style.width = p + "%";
         document.getElementById('stats').innerText = `${totalHave}/${totalStickers} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
     }
-    
-    document.addEventListener('DOMContentLoaded', render);
     render();
 </script>
 </body>
