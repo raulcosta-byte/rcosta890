@@ -78,7 +78,7 @@
         { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
     ];
 
-    let db = JSON.parse(localStorage.getItem('copa2026_final_v9')) || {};
+    let db = JSON.parse(localStorage.getItem('copa2026_vFinal_v10')) || {};
     let currentFilter = 'all';
 
     function normalizeStr(str) {
@@ -101,7 +101,7 @@
         render();
     }
 
-    function save() { localStorage.setItem('copa2026_final_v9', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('copa2026_vFinal_v10', JSON.stringify(db)); render(); }
     function exportBackup() { alert(btoa(JSON.stringify(db))); }
     function importBackup() { let c = prompt("Cole o backup:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
     function resetData() { if(confirm("Zerar?")) {db={};save();location.reload();}}
@@ -129,4 +129,10 @@
 
                 for(let i=1; i<=team.total; i++) {
                     total++;
-                    const id = `${team.code} ${i<1
+                    const id = `${team.code} ${i<10?'0'+i:i}`;
+                    const status = db[id] || '';
+                    if(status === 'have' || status === 'repeat') haveCount++;
+                    if(status === 'repeat') { repCount++; repArr.push(id); }
+
+                    let showByStatus = true;
+                    if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) showByStatus
