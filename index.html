@@ -3,42 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/831/831276.png">
-    <title>Copa 26 Tracker - Ultra</title>
+    <title>Copa 26 Tracker - Ultra Final</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
             --bg: #fdfdfd; --card-bg: #ffffff; --text-dark: #222222;
             --have: #2ecc71; --repeat: #f39c12; 
         }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; }
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
         .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
         #groupDashboard { display: none; background: #f9f9f9; padding: 15px; border-bottom: 1px solid #ddd; max-height: 250px; overflow-y: auto; font-size: 0.8em; }
         .dash-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
-        .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #555; }
-        .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 10px; margin-bottom: 10px; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 1s ease; }
-        #stats { font-size: 0.8em; font-weight: bold; margin-bottom: 10px; color: #444; min-height: 1.2em; }
+        .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+        .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 12px; margin-bottom: 8px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 0.5s; }
+        #stats { font-size: 0.85em; font-weight: 900; margin-bottom: 10px; color: #333; }
         .filter-bar { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 15px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
         .btn-filter.active { background: var(--usa-blue); color: white; border-color: var(--usa-blue); }
-        #visualRepeatList { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin: 10px auto; font-family: monospace; font-size: 0.85em; color: var(--repeat); font-weight: bold; word-break: break-all; border: 1px dashed #ccc; width: 90%; max-width: 600px; min-height: 1.2em; }
+        #visualRepeatList { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin: 10px auto; font-family: monospace; font-size: 0.85em; color: var(--repeat); font-weight: bold; width: 90%; max-width: 600px; border: 1px dashed #ccc; }
         .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; padding: 20px; }
-        .section { background: var(--card-bg); width: 320px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-bottom: 4px solid #eee; transition: all 0.3s ease; }
-        .section:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); border-bottom-color: var(--usa-blue); }
-        .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .team-count { font-size: 0.75em; padding: 2px 8px; border-radius: 10px; background: #eee; color: #666; }
-        .team-count.complete { background: var(--mex-green); color: white; }
-        .flag-img { width: 22px; height: auto; vertical-align: middle; margin-right: 8px; border-radius: 2px; }
+        .section { background: var(--card-bg); width: 320px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-bottom: 4px solid #eee; transition: 0.3s; }
+        .section:hover { transform: translateY(-5px); border-bottom-color: var(--usa-blue); }
+        .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; }
+        .flag-img { width: 24px; vertical-align: middle; margin-right: 8px; }
         .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; transition: 0.2s; color: #444; }
-        .s.have { background: var(--have) !important; color: white !important; border: none; }
-        .s.repeat { background: var(--repeat) !important; color: white !important; border: none; }
-        .group-title { color: var(--usa-blue); font-size: 1.6em; font-weight: 900; text-align: center; padding: 20px 0; text-transform: uppercase; }
-        .backup-controls { margin-top: 15px; display: flex; justify-content: center; gap: 5px; }
-        .btn-action { background: #f8f9fa; border: 1px solid #ddd; color: #666; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
-        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 2000; }
+        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; }
+        .s.have { background: var(--have) !important; color: white !important; }
+        .s.repeat { background: var(--repeat) !important; color: white !important; }
+        .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
+        .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
+        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; }
         #fileInput { display: none; }
     </style>
 </head>
@@ -47,21 +43,21 @@
 <div class="sticky-header">
     <div class="header">
         <div style="font-size: 2.2em; font-weight: 900; line-height: 1;"><span style="color: var(--usa-blue);">COPA</span> 26</div>
-        <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888; text-transform: uppercase; margin-top: 5px;"><span style="color: var(--can-red);">TRAC</span><span style="color: var(--mex-green);">KER</span></div>
+        <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888;">TRACKER</div>
         <div class="progress-container" style="margin-top:15px"><div class="progress-bar" id="pb"></div></div>
-        <div id="stats"></div>
+        <div id="stats">0 / 0 (0%)</div>
         <div class="backup-controls">
             <button class="btn-action" onclick="toggleDashboard()">DETALHES</button>
-            <button class="btn-action" onclick="exportData()">EXPORTAR (TXT)</button>
-            <button class="btn-action" onclick="document.getElementById('fileInput').click()">IMPORTAR (TXT)</button>
+            <button class="btn-action" onclick="exportData()">EXPORTAR TXT</button>
+            <button class="btn-action" onclick="document.getElementById('fileInput').click()">IMPORTAR TXT</button>
             <input type="file" id="fileInput" accept=".txt" onchange="importData(event)">
             <button class="btn-action" onclick="resetData()" style="color:var(--can-red)">ZERAR</button>
         </div>
     </div>
     <div id="groupDashboard"></div>
     <div class="repeat-panel">
-        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção..." oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; margin-bottom: 5px;">
-        <div id="visualRepeatList">Nenhuma repetida.</div>
+        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção..." oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none;">
+        <div id="visualRepeatList">Nenhuma repetida marcada.</div>
         <div class="filter-bar">
             <button class="btn-filter active" id="fAll" onclick="setFilter('all')">TUDO</button>
             <button class="btn-filter" id="fMissing" onclick="setFilter('missing')">FALTAM</button>
@@ -75,25 +71,24 @@
 
 <script>
     const albumData = [
-        { group: "ESPECIAIS", teams: [{ name: "Intro", code: "FWC", iso: "🚩", total: 19 }, { name: "Museum", code: "MUS", iso: "🏛️", total: 19 }, { name: "Coca", code: "CC", iso: "🥤", total: 12 }]},
-        { group: "GRUPO A", teams: [{ name: "México", code: "MEX", iso: "mx", total: 20 }, { name: "África do Sul", code: "RSA", iso: "za", total: 20 }, { name: "Coreia Sul", code: "KOR", iso: "kr", total: 20 }, { name: "Rep. Tcheca", code: "CZE", iso: "cz", total: 20 }]},
-        { group: "GRUPO B", teams: [{ name: "Canadá", code: "CAN", iso: "ca", total: 20 }, { name: "Bósnia", code: "BIH", iso: "ba", total: 20 }, { name: "Catar", code: "QAT", iso: "qa", total: 20 }, { name: "Suíça", code: "SUI", iso: "ch", total: 20 }]},
-        { group: "GRUPO C", teams: [{ name: "Brasil", code: "BRA", iso: "br", total: 20 }, { name: "Marrocos", code: "MAR", iso: "ma", total: 20 }, { name: "Haiti", code: "HAI", iso: "ht", total: 20 }, { name: "Escócia", code: "SCO", iso: "gb-sct", total: 20 }]},
-        { group: "GRUPO D", teams: [{ name: "EUA", code: "USA", iso: "us", total: 20 }, { name: "Paraguai", code: "PAR", iso: "py", total: 20 }, { name: "Austrália", code: "AUS", iso: "au", total: 20 }, { name: "Turquia", code: "TUR", iso: "tr", total: 20 }]},
-        { group: "GRUPO E", teams: [{ name: "Alemanha", code: "GER", iso: "de", total: 20 }, { name: "Curaçao", code: "CUW", iso: "cw", total: 20 }, { name: "Costa do Marfim", code: "CIV", iso: "ci", total: 20 }, { name: "Equador", code: "ECU", iso: "ec", total: 20 }]},
-        { group: "GRUPO F", teams: [{ name: "Holanda", code: "NED", iso: "nl", total: 20 }, { name: "Japão", code: "JPN", iso: "jp", total: 20 }, { name: "Suécia", code: "SWE", iso: "se", total: 20 }, { name: "Tunísia", code: "TUN", iso: "tn", total: 20 }]},
-        { group: "GRUPO G", teams: [{ name: "Bélgica", code: "BEL", iso: "be", total: 20 }, { name: "Egito", code: "EGY", iso: "eg", total: 20 }, { name: "Irã", code: "IRN", iso: "ir", total: 20 }, { name: "N. Zelândia", code: "NZL", iso: "nz", total: 20 }]},
-        { group: "GRUPO H", teams: [{ name: "Espanha", code: "ESP", iso: "es", total: 20 }, { name: "Cabo Verde", code: "CPV", iso: "cv", total: 20 }, { name: "Arábia S.", code: "KSA", iso: "sa", total: 20 }, { name: "Uruguai", code: "URU", iso: "uy", total: 20 }]},
-        { group: "GRUPO I", teams: [{ name: "França", code: "FRA", iso: "fr", total: 20 }, { name: "Senegal", code: "SEN", iso: "sn", total: 20 }, { name: "Iraque", code: "IRQ", iso: "iq", total: 20 }, { name: "Noruega", code: "NOR", iso: "no", total: 20 }]},
-        { group: "GRUPO J", teams: [{ name: "Argentina", code: "ARG", iso: "ar", total: 20 }, { name: "Argélia", code: "ALG", iso: "dz", total: 20 }, { name: "Áustria", code: "AUT", iso: "at", total: 20 }, { name: "Jordânia", code: "jo", total: 20 }]},
-        { group: "GRUPO K", teams: [{ name: "Portugal", code: "POR", iso: "pt", total: 20 }, { name: "RD Congo", code: "COD", iso: "cd", total: 20 }, { name: "Uzbequistão", code: "UZB", iso: "uz", total: 20 }, { name: "Colômbia", code: "COL", iso: "co", total: 20 }]},
-        { group: "GRUPO L", teams: [{ name: "Inglaterra", code: "ENG", iso: "gb-eng", total: 20 }, { name: "Croácia", code: "CRO", iso: "hr", total: 20 }, { name: "Gana", code: "GHA", iso: "gh", total: 20 }, { name: "Grécia", code: "GRE", iso: "gr", total: 20 }]}
+        { group: "ESPECIAIS", teams: [{ name: "Intro", code: "FWC", icon: "🚩", total: 19 }, { name: "Museum", code: "MUS", icon: "🏛️", total: 19 }, { name: "Coca", code: "CC", icon: "🥤", total: 12 }]},
+        { group: "GRUPO A", teams: [{ name: "México", code: "MEX", icon: "mx", total: 20 }, { name: "África do Sul", code: "RSA", icon: "za", total: 20 }, { name: "Coreia Sul", code: "KOR", icon: "kr", total: 20 }, { name: "Rep. Tcheca", code: "CZE", icon: "cz", total: 20 }]},
+        { group: "GRUPO B", teams: [{ name: "Canadá", code: "CAN", icon: "ca", total: 20 }, { name: "Bósnia", code: "BIH", icon: "ba", total: 20 }, { name: "Catar", code: "QAT", icon: "qa", total: 20 }, { name: "Suíça", code: "SUI", icon: "ch", total: 20 }]},
+        { group: "GRUPO C", teams: [{ name: "Brasil", code: "BRA", icon: "br", total: 20 }, { name: "Marrocos", code: "MAR", icon: "ma", total: 20 }, { name: "Haiti", code: "HAI", icon: "ht", total: 20 }, { name: "Escócia", code: "SCO", icon: "gb-sct", total: 20 }]},
+        { group: "GRUPO D", teams: [{ name: "EUA", code: "USA", icon: "us", total: 20 }, { name: "Paraguai", code: "PAR", icon: "py", total: 20 }, { name: "Austrália", code: "AUS", icon: "au", total: 20 }, { name: "Turquia", code: "TUR", icon: "tr", total: 20 }]},
+        { group: "GRUPO E", teams: [{ name: "Alemanha", code: "GER", icon: "de", total: 20 }, { name: "Curaçao", code: "CUW", icon: "cw", total: 20 }, { name: "Costa do Marfim", code: "CIV", icon: "ci", total: 20 }, { name: "Equador", code: "ECU", icon: "ec", total: 20 }]},
+        { group: "GRUPO F", teams: [{ name: "Holanda", code: "NED", icon: "nl", total: 20 }, { name: "Japão", code: "JPN", icon: "jp", total: 20 }, { name: "Suécia", code: "SWE", icon: "se", total: 20 }, { name: "Tunísia", code: "TUN", icon: "tn", total: 20 }]},
+        { group: "GRUPO G", teams: [{ name: "Bélgica", code: "BEL", icon: "be", total: 20 }, { name: "Egito", code: "EGY", icon: "eg", total: 20 }, { name: "Irã", code: "IRN", icon: "ir", total: 20 }, { name: "N. Zelândia", code: "NZL", icon: "nz", total: 20 }]},
+        { group: "GRUPO H", teams: [{ name: "Espanha", code: "ESP", icon: "es", total: 20 }, { name: "Cabo Verde", code: "CPV", icon: "cv", total: 20 }, { name: "Arábia S.", code: "KSA", icon: "sa", total: 20 }, { name: "Uruguai", code: "URU", icon: "uy", total: 20 }]},
+        { group: "GRUPO I", teams: [{ name: "França", code: "FRA", icon: "fr", total: 20 }, { name: "Senegal", code: "SEN", icon: "sn", total: 20 }, { name: "Iraque", code: "IRQ", icon: "iq", total: 20 }, { name: "Noruega", code: "NOR", icon: "no", total: 20 }]},
+        { group: "GRUPO J", teams: [{ name: "Argentina", code: "ARG", icon: "ar", total: 20 }, { name: "Argélia", code: "ALG", icon: "dz", total: 20 }, { name: "Áustria", code: "AUT", icon: "at", total: 20 }, { name: "Jordânia", code: "jo", total: 20 }]},
+        { group: "GRUPO K", teams: [{ name: "Portugal", code: "POR", icon: "pt", total: 20 }, { name: "RD Congo", code: "COD", icon: "cd", total: 20 }, { name: "Uzbequistão", code: "UZB", icon: "uz", total: 20 }, { name: "Colômbia", code: "COL", icon: "co", total: 20 }]},
+        { group: "GRUPO L", teams: [{ name: "Inglaterra", code: "ENG", icon: "gb-eng", total: 20 }, { name: "Croácia", code: "CRO", icon: "hr", total: 20 }, { name: "Gana", code: "GHA", icon: "gh", total: 20 }, { name: "Grécia", code: "GRE", icon: "gr", total: 20 }]}
     ];
 
     let db = JSON.parse(localStorage.getItem('copa2026_vFinal_Fixed')) || {};
     let currentFilter = 'all';
 
-    function normalizeStr(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
     function save() { localStorage.setItem('copa2026_vFinal_Fixed', JSON.stringify(db)); render(); }
     function toggle(id) {
         if (!db[id]) db[id] = 'have';
@@ -104,85 +99,77 @@
     function setFilter(f) {
         currentFilter = f;
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        if(f==='all') document.getElementById('fAll').classList.add('active');
-        if(f==='missing') document.getElementById('fMissing').classList.add('active');
-        if(f==='repeats') document.getElementById('fRepeats').classList.add('active');
+        document.getElementById('f' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
         render();
     }
     function toggleDashboard() { const d = document.getElementById('groupDashboard'); d.style.display = (d.style.display === 'block') ? 'none' : 'block'; }
+    function exportData() {
+        const data = btoa(JSON.stringify(db));
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;base64,' + data;
+        a.download = 'backup-copa26.txt';
+        a.click();
+    }
+    function importData(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(f) { try { db = JSON.parse(atob(f.target.result)); save(); location.reload(); } catch(err){alert('Erro');} };
+        reader.readAsText(file);
+    }
+    function resetData() { if(confirm("Zerar?")) {db={};save();location.reload();}}
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) return alert("Nenhuma repetida marcada!");
-        let text = "⚽ *MINHAS REPETIDAS - COPA 26*\n\n" + reps.sort().join(", ") + "\n\n_Gerado por Copa 26 Tracker_";
-        navigator.clipboard.writeText(text).then(() => alert("Lista copiada!"));
+        if (reps.length === 0) return alert("Sem repetidas!");
+        let text = "⚽ *REPETIDAS COPA 26*\n\n" + reps.sort().join(", ");
+        navigator.clipboard.writeText(text).then(() => alert("Copiado!"));
     }
-    function exportData() {
-        const data = btoa(JSON.stringify(db));
-        const blob = new Blob([data], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const dataHora = new Date().toLocaleDateString().replace(/\//g, '-');
-        a.href = url; a.download = `backup-album-copa26-${dataHora}.txt`; a.click(); window.URL.revokeObjectURL(url);
-    }
-    function importData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) { try { db = JSON.parse(atob(e.target.result)); save(); location.reload(); } catch (err) { alert("Arquivo inválido."); } };
-        reader.readAsText(file);
-    }
-    function resetData() { if(confirm("Zerar tudo?")) {db={};save();location.reload();}}
 
     function render() {
         const main = document.getElementById('mainContent');
         const dash = document.getElementById('groupDashboard');
         const visualReps = document.getElementById('visualRepeatList');
-        const searchTerm = normalizeStr(document.getElementById('teamSearch').value);
-        main.innerHTML = ''; dash.innerHTML = '<strong>Progresso por Grupo:</strong>';
-        let totalStickers = 0, totalHave = 0, repArr = [];
+        const searchTerm = (document.getElementById('teamSearch').value || "").toLowerCase();
+        
+        main.innerHTML = ''; dash.innerHTML = '<strong>Progresso:</strong>';
+        let total = 0, have = 0, repArr = [];
 
         albumData.forEach(g => {
-            let gStickers = 0, gHave = 0, groupVisible = false;
+            let gTotal = 0, gHave = 0, groupVisible = false;
             const grid = document.createElement('div'); grid.className = 'album-grid';
+            
             g.teams.forEach(team => {
                 let tHave = 0, tHtml = "";
-                const nameMatch = normalizeStr(team.name).includes(searchTerm) || normalizeStr(team.code).includes(searchTerm);
+                const nameMatch = team.name.toLowerCase().includes(searchTerm) || team.code.toLowerCase().includes(searchTerm);
+                
                 for(let i=1; i<=team.total; i++) {
-                    totalStickers++; gStickers++;
+                    total++; gTotal++;
                     const id = `${team.code} ${i<10?'0'+i:i}`;
                     const status = db[id] || '';
-                    if(status === 'have' || status === 'repeat') { totalHave++; gHave++; tHave++; }
+                    if(status !== '') { have++; gHave++; tHave++; }
                     if(status === 'repeat') repArr.push(id);
-                    let show = true;
-                    if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) show = false;
-                    if(currentFilter === 'repeats' && status !== 'repeat') show = false;
+                    
+                    let show = (currentFilter === 'all') || (currentFilter === 'missing' && status === '') || (currentFilter === 'repeats' && status === 'repeat');
                     if(show && nameMatch) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
                 }
                 if(tHtml !== "") {
                     const sec = document.createElement('div'); sec.className = 'section';
-                    // LÓGICA DE BANDEIRA: Se tiver 2 letras ou hífen, é país. Se não, é emoji direto.
-                    let isCountry = team.iso.length <= 6 && team.iso.toLowerCase() === team.iso;
-                    let flagHtml = isCountry 
-                        ? `<img class="flag-img" src="https://flagcdn.com/w40/${team.iso}.png">` 
-                        : `<span style="margin-right:8px; font-size:1.2em;">${team.iso}</span>`;
-                    sec.innerHTML = `<h2><span>${flagHtml} ${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
+                    let iconHtml = (team.icon.length > 3) ? `<span style="margin-right:8px">${team.icon}</span>` : `<img class="flag-img" src="https://flagcdn.com/w40/${team.icon}.png">`;
+                    sec.innerHTML = `<h2><span>${iconHtml} ${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
                     grid.appendChild(sec);
                 }
             });
-            const perc = ((gHave / gStickers) * 100).toFixed(0);
-            dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${perc}% (${gHave}/${gStickers})</strong></div>`;
+            dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${((gHave/gTotal)*100).toFixed(0)}%</strong></div>`;
             if(groupVisible) {
                 const title = document.createElement('div'); title.className = 'group-title'; title.innerText = g.group;
                 main.appendChild(title); main.appendChild(grid);
             }
         });
         visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida.";
-        let p = ((totalHave / totalStickers) * 100).toFixed(1);
+        let p = (have/total*100).toFixed(1);
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${totalHave}/${totalStickers} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
+        document.getElementById('stats').innerText = `${have} / ${total} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
     }
-    document.addEventListener('DOMContentLoaded', render);
     render();
 </script>
 </body>
