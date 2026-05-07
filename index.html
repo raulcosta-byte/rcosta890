@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Oficial</title>
+    <title>Copa 26 Tracker - Ultra Fix</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
             --bg: #fdfdfd; --card-bg: #ffffff; --text-dark: #222222;
             --have: #2ecc71; --repeat: #f39c12; 
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 80px; }
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
         .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
         #groupDashboard { display: none; background: #f9f9f9; padding: 15px; border-bottom: 1px solid #ddd; max-height: 250px; overflow-y: auto; font-size: 0.8em; }
@@ -18,7 +18,7 @@
         .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
         .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 12px; margin-bottom: 8px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 0.5s; }
-        #stats { font-size: 0.85em; font-weight: bold; margin-bottom: 10px; color: #333; }
+        #stats { font-size: 0.85em; font-weight: 900; margin-bottom: 10px; color: #333; }
         .filter-bar { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 15px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
         .btn-filter.active { background: var(--usa-blue); color: white; border-color: var(--usa-blue); }
@@ -27,14 +27,14 @@
         .section { background: var(--card-bg); width: 320px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-bottom: 4px solid #eee; transition: 0.3s; }
         .section:hover { transform: translateY(-5px); border-bottom-color: var(--usa-blue); }
         .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .flag-img { width: 22px; height: auto; vertical-align: middle; margin-right: 8px; border-radius: 2px; display: inline-block; }
+        .flag-img { width: 24px; height: auto; vertical-align: middle; margin-right: 8px; border-radius: 2px; }
         .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; }
         .s.have { background: var(--have) !important; color: white !important; }
         .s.repeat { background: var(--repeat) !important; color: white !important; }
         .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
-        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; }
         #fileInput { display: none; }
     </style>
 </head>
@@ -45,7 +45,7 @@
         <div style="font-size: 2.2em; font-weight: 900; line-height: 1;"><span style="color: var(--usa-blue);">COPA</span> 26</div>
         <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888;">TRACKER</div>
         <div class="progress-container" style="margin-top:15px"><div class="progress-bar" id="pb"></div></div>
-        <div id="stats">Carregando...</div>
+        <div id="stats">0 / 0 (0%)</div>
         <div class="backup-controls">
             <button class="btn-action" onclick="toggleDashboard()">DETALHES</button>
             <button class="btn-action" onclick="exportData()">EXPORTAR TXT</button>
@@ -57,7 +57,7 @@
     <div id="groupDashboard"></div>
     <div class="repeat-panel">
         <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção..." oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none;">
-        <div id="visualRepeatList">Nenhuma repetida.</div>
+        <div id="visualRepeatList">Nenhuma repetida marcada.</div>
         <div class="filter-bar">
             <button class="btn-filter active" id="fAll" onclick="setFilter('all')">TUDO</button>
             <button class="btn-filter" id="fMissing" onclick="setFilter('missing')">FALTAM</button>
@@ -70,9 +70,12 @@
 <button id="shareBtn" onclick="generateShareList()">GERAR LISTA WHATSAPP</button>
 
 <script>
-    // LISTA DE DADOS OFICIAL - Grupo I Corrigido (França, Senegal, Iraque, Noruega)
     const albumData = [
-        { group: "ESPECIAIS", teams: [{ name: "Intro", code: "FWC", icon: "🚩", total: 19 }, { name: "Museum", code: "MUS", icon: "🏛️", total: 19 }, { name: "Coca", code: "CC", icon: "🥤", total: 12 }]},
+        { group: "ESPECIAIS", teams: [
+            { name: "Intro", code: "FWC", icon: "🚩", isEmoji: true, total: 19 }, 
+            { name: "Museum", code: "MUS", icon: "🏛️", isEmoji: true, total: 19 }, 
+            { name: "Coca", code: "CC", icon: "🥤", isEmoji: true, total: 12 }
+        ]},
         { group: "GRUPO A", teams: [{ name: "México", code: "MEX", icon: "mx", total: 20 }, { name: "África do Sul", code: "RSA", icon: "za", total: 20 }, { name: "Coreia Sul", code: "KOR", icon: "kr", total: 20 }, { name: "Rep. Tcheca", code: "CZE", icon: "cz", total: 20 }]},
         { group: "GRUPO B", teams: [{ name: "Canadá", code: "CAN", icon: "ca", total: 20 }, { name: "Bósnia", code: "BIH", icon: "ba", total: 20 }, { name: "Catar", code: "QAT", icon: "qa", total: 20 }, { name: "Suíça", code: "SUI", icon: "ch", total: 20 }]},
         { group: "GRUPO C", teams: [{ name: "Brasil", code: "BRA", icon: "br", total: 20 }, { name: "Marrocos", code: "MAR", icon: "ma", total: 20 }, { name: "Haiti", code: "HAI", icon: "ht", total: 20 }, { name: "Escócia", code: "SCO", icon: "gb-sct", total: 20 }]},
@@ -91,26 +94,22 @@
     let currentFilter = 'all';
 
     function save() { localStorage.setItem('copa2026_vFinal_Fixed', JSON.stringify(db)); render(); }
-    
     function toggle(id) {
         if (!db[id]) db[id] = 'have';
         else if (db[id] === 'have') db[id] = 'repeat';
         else delete db[id];
         save();
     }
-
     function setFilter(f) {
         currentFilter = f;
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
         document.getElementById('f' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
         render();
     }
-
     function toggleDashboard() { 
         const d = document.getElementById('groupDashboard');
         d.style.display = (d.style.display === 'block') ? 'none' : 'block';
     }
-
     function exportData() {
         const data = btoa(JSON.stringify(db));
         const a = document.createElement('a');
@@ -118,16 +117,19 @@
         a.download = 'backup-copa26.txt';
         a.click();
     }
-
     function importData(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = function(f) { try { db = JSON.parse(atob(f.target.result)); save(); location.reload(); } catch(err){alert('Erro');} };
+        reader.onload = function(f) { 
+            try { 
+                db = JSON.parse(atob(f.target.result.split(',')[1] || f.target.result)); 
+                save(); 
+                location.reload(); 
+            } catch(err){alert('Erro ao importar arquivo');} 
+        };
         reader.readAsText(file);
     }
-
-    function resetData() { if(confirm("Deseja zerar o álbum?")) {db={};save();location.reload();}}
-
+    function resetData() { if(confirm("Zerar álbum?")) {db={};save();location.reload();}}
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
@@ -142,8 +144,8 @@
         const visualReps = document.getElementById('visualRepeatList');
         const searchTerm = (document.getElementById('teamSearch').value || "").toLowerCase();
         
-        main.innerHTML = ''; dash.innerHTML = '<strong>Progresso:</strong>';
-        let total = 0, haveCount = 0, repArr = [];
+        main.innerHTML = ''; dash.innerHTML = '<strong>Progresso por Grupo:</strong>';
+        let total = 0, have = 0, repArr = [];
 
         albumData.forEach(g => {
             let gTotal = 0, gHave = 0, groupVisible = false;
@@ -157,39 +159,30 @@
                     total++; gTotal++;
                     const id = `${team.code} ${i<10?'0'+i:i}`;
                     const status = db[id] || '';
-                    if(status !== '') { haveCount++; gHave++; tHave++; }
+                    if(status !== '') { have++; gHave++; tHave++; }
                     if(status === 'repeat') repArr.push(id);
                     
                     let show = (currentFilter === 'all') || (currentFilter === 'missing' && status === '') || (currentFilter === 'repeats' && status === 'repeat');
                     if(show && nameMatch) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
                 }
-
                 if(tHtml !== "") {
                     const sec = document.createElement('div'); sec.className = 'section';
-                    // LÓGICA DE ÍCONE: Se o icon tiver mais de 2 letras, é emoji. Se for 2 letras, é bandeira.
-                    let iconHtml = (team.icon.length > 2) 
-                        ? `<span style="margin-right:8px; font-size:1.2em;">${team.icon}</span>` 
-                        : `<img class="flag-img" src="https://flagcdn.com/w40/${team.icon}.png" onerror="this.style.display='none'">`;
-                    
+                    let iconHtml = (team.isEmoji) ? `<span style="margin-right:8px; font-size:1.2em;">${team.icon}</span>` : `<img class="flag-img" src="https://flagcdn.com/w40/${team.icon}.png">`;
                     sec.innerHTML = `<h2><span>${iconHtml} ${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
                     grid.appendChild(sec);
                 }
             });
-
-            dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${((gHave/gTotal)*100).toFixed(0)}%</strong></div>`;
+            dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${gTotal > 0 ? ((gHave/gTotal)*100).toFixed(0) : 0}%</strong></div>`;
             if(groupVisible) {
                 const title = document.createElement('div'); title.className = 'group-title'; title.innerText = g.group;
                 main.appendChild(title); main.appendChild(grid);
             }
         });
-
-        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida.";
-        let p = (total > 0) ? (haveCount/total*100).toFixed(1) : 0;
+        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida marcada.";
+        let p = (total > 0) ? (have/total*100).toFixed(1) : 0;
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${haveCount} / ${total} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
+        document.getElementById('stats').innerText = `${have} / ${total} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
     }
-
-    // Inicializa a renderização
     render();
 </script>
 </body>
