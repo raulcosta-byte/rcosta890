@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Copa 2026 - App Control</title>
+    <style>
+        :root { --primary: #8e1c33; --secondary: #6b1426; --have: #2ecc71; --repeat: #f39c12; --bg: #f4f4f4; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding-bottom: 50px; -webkit-tap-highlight-color: transparent; }
+        
+        .header, .repeat-panel { 
+            background: var(--primary); color: white; padding: 20px 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+        }
+        .header { position: sticky; top: 0; z-index: 100; padding-bottom: 10px; }
+        .repeat-panel { 
+            background: var(--secondary); margin-bottom: 15px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+        }
+
+        .header h1 { margin: 0 0 10px 0; font-size: 1.3em; text-transform: uppercase; }
+        .progress-container { width: 100%; background: rgba(255,255,255,0.15); border-radius: 20px; height: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px; }
+        .progress-bar { height: 100%; background: var(--have); width: 0%; transition: 0.6s ease; }
+        .stats { font-size: 0.85em; margin-bottom: 12px; font-weight: 600; }
+
+        /* FILTROS */
+        .filter-bar { display: flex; justify-content: center; gap: 5px; margin: 10px 0; }
+        .btn-filter { background: rgba(255,255,255,0.2); border: 1px solid #fff; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.7em; font-weight: bold; cursor: pointer; }
+        .btn-filter.active { background: white; color: var(--primary); }
+
+        .btn-action { background: transparent; border: 1px solid rgba(255,255,255,0.5); padding: 5px 10px; border-radius: 6px; font-size: 0.65em; color: white; }
+
+        .repeat-panel h3 { margin: 0 0 10px 0; font-size: 0.9em; text-transform: uppercase; }
+        #repeatList { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; font-family: monospace; font-size: 0.8em; color: #ffcc80; font-weight: bold; word-break: break-all; }
+
+        .group-title { background: #1a1a1a; color: #fff; padding: 12px 15px; margin: 25px 0 10px 0; font-size: 1.1em; font-weight: bold; border-left: 8px solid var(--have); }
+        .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 0 15px; }
+        .section { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 4px solid var(--primary); transition: 0.3s; }
+        .section.hidden { display: none; }
+        .section h2 { margin: 0 0 12px 0; font-size: 0.85rem; color: #333; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+
+        .stickers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .s { background: #fff; border: 1px solid #ddd; padding: 12px 0; text-align: center; cursor: pointer; border-radius: 6px; font-size: 0.65em; font-weight: 900; color: #444; }
+        .s.have { background: var(--have) !important; color: white !important; border-color: #27ae60; }
+        .s.repeat { background: var(--repeat) !important; color: white !important; border-color: #e67e22; }
+        .s.hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Copa 2026</h1>
+    <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
+    <div id="stats" class="stats">Calculando...</div>
+    
+    <div class="filter-bar">
+        <button class="btn-filter active" id="fAll" onclick="setFilter('all')">VER TUDO</button>
+        <button class="btn-filter" id="fMissing" onclick="setFilter('missing')">FALTANDO</button>
+        <button class="btn-filter" id="fRepeat" onclick="setFilter('repeats')">REPETIDAS</button>
+    </div>
+
+    <div class="backup-controls">
+        <button class="btn-action" onclick="exportBackup()">Exportar</button>
+        <button class="btn-action" onclick="importBackup()">Importar</button>
+        <button class="btn-action" style="color:#ffb3b3;" onclick="resetData()">Zerar</button>
+    </div>
+</div>
+
+<div class="repeat-panel">
+    <h3>🔄 Repetidas para Troca</h3>
+    <div id="repeatList">Nenhuma repetida.</div>
+</div>
+
+<div id="mainContent"></div>
+
+<script>
+    const albumData = [
+        { group: "ESPECIAIS", teams: [{ name: "🚩 Intro", code: "FWC", total: 19 }, { name: "🏛️ Museum", code: "MUS", total: 19 }, { name: "🥤 Coca", code: "CC", total: 12 }]},
+        { group: "GRUPO A", teams: [{ name: "🇲🇽 México", code: "MEX", total: 20 }, { name: "🇿🇦 África do Sul", code: "RSA", total: 20 }, { name: "🇰🇷 Coreia Sul", code: "KOR", total: 20 }, { name: "🇨🇿 Rep. Tcheca", code: "CZE", total: 20 }]},
+        { group: "GRUPO B", teams: [{ name: "🇨🇦 Canadá", code: "CAN", total: 20 }, { name: "🇧🇦 Bósnia", code: "BIH", total: 20 }, { name: "🇶🇦 Catar", code: "QAT", total: 20 }, { name: "🇨🇭 Suíça", code: "SUI", total: 20 }]},
+        { group: "GRUPO C", teams: [{ name: "🇧🇷 Brasil", code: "BRA", total: 20 }, { name: "🇲🇦 Marrocos", code: "MAR", total: 20 }, { name: "🇭🇹 Haiti", code: "HAI", total: 20 }, { name: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escócia", code: "SCO", total: 20 }]},
+        { group: "GRUPO D", teams: [{ name: "🇺🇸 EUA", code: "USA", total: 20 }, { name: "🇵🇾 Paraguai", code: "PAR", total: 20 }, { name: "🇦🇺 Austrália", code: "AUS", total: 20 }, { name: "🇹🇷 Turquia", code: "TUR", total: 20 }]},
+        { group: "GRUPO E", teams: [{ name: "🇩🇪 Alemanha", code: "GER", total: 20 }, { name: "🇨🇼 Curaçao", code: "CUR", total: 20 }, { name: "🇨🇮 C. Marfim", code: "CIV", total: 20 }, { name: "🇪🇨 Equador", code: "ECU", total: 20 }]},
+        { group: "GRUPO F", teams: [{ name: "🇳🇱 Holanda", code: "NED", total: 20 }, { name: "🇯🇵 Japão", code: "JPN", total: 20 }, { name: "🇸🇪 Suécia", code: "SWE", total: 20 }, { name: "🇹🇳 Tunísia", code: "TUN", total: 20 }]},
+        { group: "GRUPO G", teams: [{ name: "🇧🇪 Bélgica", code: "BEL", total: 20 }, { name: "🇪🇬 Egito", code: "EGY", total: 20 }, { name: "🇮🇷 Irã", code: "IRN", total: 20 }, { name: "🇳🇿 N. Zelândia", code: "NZL", total: 20 }]},
+        { group: "GRUPO H", teams: [{ name: "🇪🇸 Espanha", code: "ESP", total: 20 }, { name: "🇨🇻 Cabo Verde", code: "CPV", total: 20 }, { name: "🇸🇦 Arábia S.", code: "KSA", total: 20 }, { name: "🇺🇾 Uruguai", code: "URU", total: 20 }]},
+        { group: "GRUPO I", teams: [{ name: "🇫🇷 França", code: "FRA", total: 20 }, { name: "🇸🇳 Senegal", code: "SEN", total: 20 }, { name: "🇮🇶 Iraque/BOL", code: "BOL", total: 20 }, { name: "🇳🇴 Noruega", code: "NOR", total: 20 }]},
+        { group: "GRUPO J", teams: [{ name: "🇦🇷 Argentina", code: "ARG", total: 20 }, { name: "🇩🇿 Argélia", code: "ALG", total: 20 }, { name: "🇦🇹 Áustria", code: "AUT", total: 20 }, { name: "🇯🇴 Jordânia", code: "JOR", total: 20 }]},
+        { group: "GRUPO K", teams: [{ name: "🇵🇹 Portugal", code: "POR", total: 20 }, { name: "🇨🇩 RD Congo", code: "COD", total: 20 }, { name: "🇺🇿 Uzbequistan", code: "UZB", total: 20 }, { name: "🇨🇴 Colômbia", code: "COL", total: 20 }]},
+        { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
+    ];
+
+    let db = JSON.parse(localStorage.getItem('copa2026_app_v4')) || {};
+    let currentFilter = 'all';
+
+    function toggle(id) {
+        if (!db[id]) db[id] = 'have';
+        else if (db[id] === 'have') db[id] = 'repeat';
+        else delete db[id];
+        save();
+    }
+
+    function setFilter(f) {
+        currentFilter = f;
+        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+        if(f === 'all') document.getElementById('fAll').classList.add('active');
+        if(f === 'missing') document.getElementById('fMissing').classList.add('active');
+        if(f === 'repeats') document.getElementById('fRepeat').classList.add('active');
+        render();
+    }
+
+    function save() { localStorage.setItem('copa2026_app_v4', JSON.stringify(db)); render(); }
+    function exportBackup() { alert(btoa(JSON.stringify(db))); }
+    function importBackup() { let c = prompt("Cole o código:"); if(c){db=JSON.parse(atob(c));save();}}
+    function resetData() { if(confirm("Zerar?")) {db={};save();}}
+
+    function render() {
+        const main = document.getElementById('mainContent');
+        main.innerHTML = '';
+        let total = 0, haveCount = 0, repCount = 0, repArr = [];
+        
+        albumData.forEach(g => {
+            let groupVisible = false;
+            const tDiv = document.createElement('div'); tDiv.className = 'group-title'; tDiv.innerText = g.group;
+            const grid = document.createElement('div'); grid.className = 'album-grid';
+
+            g.teams.forEach(team => {
+                let teamVisible = false;
+                const sec = document.createElement('div'); sec.className = 'section';
+                sec.innerHTML = `<h2>${team.name}</h2>`;
+                const sts = document.createElement('div'); sts.className = 'stickers';
+
+                for(let i=1; i<=team.total; i++) {
+                    total++;
+                    const id = `${team.code} ${i<10?'0'+i:i}`;
+                    const status = db[id] || '';
+                    if(status === 'have' || status === 'repeat') haveCount++;
+                    if(status === 'repeat') { repCount++; repArr.push(id); }
+
+                    let show = true;
+                    if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) show = false;
+                    if(currentFilter === 'repeats' && status !== 'repeat') show = false;
+
+                    if(show) {
+                        teamVisible = true; groupVisible = true;
+                        const s = document.createElement('div'); s.className = 's ' + status;
+                        s.innerText = id; s.onclick = () => toggle(id); sts.appendChild(s);
+                    }
+                }
+                if(teamVisible) { sec.appendChild(sts); grid.appendChild(sec); }
+            });
+            if(groupVisible) { main.appendChild(tDiv); main.appendChild(grid); }
+        });
+
+        let p = ((haveCount / total) * 100).toFixed(1);
+        document.getElementById('pb').style.width = p + "%";
+        document.getElementById('stats').innerText = `Tenho: ${haveCount} | Faltam: ${total-haveCount} (${p}%) | Repetidas: ${repCount}`;
+        document.getElementById('repeatList').innerText = repArr.length > 0 ? repArr.sort().join(", ") : "Nenhuma.";
+    }
+    render();
+</script>
+</body>
+</html>
