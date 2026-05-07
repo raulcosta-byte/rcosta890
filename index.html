@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/831/831276.png">
-    <title>FIFA World Cup 26 - Trionda Edition</title>
+    <title>Copa 26 Tracker - Oficial</title>
     <style>
-        /* PALETA TRIONDA: Azul (EUA), Vermelho (Canadá), Verde (México) */
         :root { 
             --usa-blue: #002868;
             --can-red: #ef3340;
@@ -17,100 +16,47 @@
             --have: #2ecc71; 
             --repeat: #f39c12; 
         }
-        
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 50px; }
-        
-        /* HEADER VIBRANTE */
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 50px; }
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        
-        .header { 
-            background: white; 
-            padding: 15px; 
-            text-align: center; 
-            border-bottom: 5px solid;
-            /* Gradiente Trionda na borda inferior */
-            border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1;
-        }
-
-        .logo-container img { height: 70px; margin-bottom: 10px; }
-
-        .repeat-panel { 
-            background: #f1f1f1; 
-            padding: 12px; 
-            text-align: center;
-            border-bottom-left-radius: 20px; 
-            border-bottom-right-radius: 20px;
-            color: #555;
-            font-size: 0.9em;
-        }
-
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
+        .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #555; font-size: 0.9em; }
         .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 10px; margin-bottom: 10px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 1s ease; }
-        
-        #teamSearch { 
-            width: 90%; max-width: 500px; padding: 12px; border-radius: 30px; border: 2px solid #ddd; 
-            background: white; color: #333; font-size: 1em; outline: none; margin-bottom: 15px;
-            transition: 0.3s;
-        }
-        #teamSearch:focus { border-color: var(--usa-blue); }
-
+        #teamSearch { width: 90%; max-width: 500px; padding: 12px; border-radius: 30px; border: 2px solid #ddd; outline: none; margin-bottom: 15px; }
         .filter-bar { display: flex; justify-content: center; gap: 8px; }
-        .btn-filter { 
-            background: white; border: 2px solid #eee; color: #777; 
-            padding: 8px 20px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; 
-        }
+        .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 20px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
         .btn-filter.active { background: var(--usa-blue); color: white; border-color: var(--usa-blue); }
-
-        #repeatList { font-family: monospace; font-size: 0.85em; color: var(--can-red); font-weight: bold; }
-
-        /* LAYOUT DE CARDS LADO A LADO */
-        .group-container { width: 100%; margin-top: 20px; }
-        .group-title { 
-            color: var(--usa-blue); font-size: 1.5em; font-weight: 900; 
-            text-align: center; padding: 15px; text-transform: uppercase;
-        }
-        
-        .album-grid { 
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 15px;
-        }
-
-        .section { 
-            background: var(--card-bg); width: 320px; padding: 18px; border-radius: 15px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee;
-            transition: 0.3s;
-        }
-        .section:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        
-        .section h2 { 
-            margin: 0 0 15px 0; font-size: 1rem; color: #333; 
-            border-bottom: 2px solid #f5f5f5; padding-bottom: 8px; display: flex; justify-content: space-between;
-        }
-
+        .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 15px; }
+        .section { background: var(--card-bg); width: 320px; padding: 18px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 8px; display: flex; justify-content: space-between; }
         .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
-        .s { 
-            background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; 
-            text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; 
-            color: #495057; cursor: pointer; 
-        }
+        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; }
         .s.have { background: var(--have) !important; color: white !important; border: none; }
         .s.repeat { background: var(--repeat) !important; color: white !important; border: none; }
-
-        .backup-controls { margin-top: 15px; display: flex; justify-content: center; gap: 5px; }
-        .btn-action { background: #f8f9fa; border: 1px solid #ddd; color: #666; padding: 5px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; }
+        .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px; text-transform: uppercase; }
+        .btn-action { background: #f8f9fa; border: 1px solid #ddd; color: #666; padding: 5px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; margin: 0 2px; }
     </style>
 </head>
 <body>
 
 <div class="sticky-header">
     <div class="header">
-        <div class="logo-container">
-            <img src="https://upload.wikimedia.org/wikipedia/pt/3/3d/Logotipo_da_Copa_do_Mundo_FIFA_de_2026.png" alt="FIFA 26">
+        <div class="logo-container" style="margin-bottom: 20px; padding: 10px;">
+            <div style="font-size: 2.2em; font-weight: 900; letter-spacing: -1px; line-height: 1;">
+                <span style="color: var(--usa-blue);">COPA</span> 
+                <span style="color: var(--text-dark);">26</span>
+            </div>
+            <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888; margin-top: 5px; text-transform: uppercase;">
+                <span style="color: var(--can-red);">TRAC</span><span style="color: var(--mex-green);">KER</span>
+            </div>
+            <div style="width: 30px; height: 3px; background: var(--usa-blue); margin: 10px 3px; display: inline-block;"></div>
+            <div style="width: 30px; height: 3px; background: var(--can-red); margin: 10px 3px; display: inline-block;"></div>
+            <div style="width: 30px; height: 3px; background: var(--mex-green); margin: 10px 3px; display: inline-block;"></div>
         </div>
         
         <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
-        <div id="stats" style="font-size: 0.8em; font-weight: bold; margin-bottom: 12px; color: #666;"></div>
-        
-        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção, grupo ou código..." oninput="render()">
+        <div id="stats" style="font-size: 0.85em; font-weight: bold; margin-bottom: 15px; color: #444; text-transform: uppercase;"></div>
+        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção ou grupo..." oninput="render()">
         
         <div class="filter-bar">
             <button class="btn-filter active" id="fAll" onclick="setFilter('all')">TUDO</button>
@@ -118,10 +64,10 @@
             <button class="btn-filter" id="fRepeat" onclick="setFilter('repeats')">REPETIDAS</button>
         </div>
 
-        <div class="backup-controls">
+        <div class="backup-controls" style="margin-top:15px">
             <button class="btn-action" onclick="exportBackup()">EXPORTAR</button>
             <button class="btn-action" onclick="importBackup()">IMPORTAR</button>
-            <button class="btn-action" onclick="resetData()" style="color: var(--can-red);">ZERAR</button>
+            <button class="btn-action" onclick="resetData()" style="color: var(--can-red); font-weight: bold;">ZERAR</button>
         </div>
     </div>
     <div class="repeat-panel">
@@ -148,8 +94,7 @@
         { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
     ];
 
-    // CHAVE DE DADOS: vFinal_Trionda
-    let db = JSON.parse(localStorage.getItem('copa2026_Trionda')) || {};
+    let db = JSON.parse(localStorage.getItem('copa2026_Trionda_vFinal')) || {};
     let currentFilter = 'all';
 
     function normalizeStr(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
@@ -167,10 +112,10 @@
         if(f==='repeats') document.getElementById('fRepeat').classList.add('active');
         render();
     }
-    function save() { localStorage.setItem('copa2026_Trionda', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('copa2026_Trionda_vFinal', JSON.stringify(db)); render(); }
     function exportBackup() { alert(btoa(JSON.stringify(db))); }
     function importBackup() { let c = prompt("Cole o backup:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
-    function resetData() { if(confirm("Deseja apagar tudo?")) {db={};save();location.reload();}}
+    function resetData() { if(confirm("Deseja zerar o álbum?")) {db={};save();location.reload();}}
 
     function render() {
         const main = document.getElementById('mainContent');
@@ -187,7 +132,6 @@
             g.teams.forEach(team => {
                 let teamVisible = false;
                 const nameMatch = normalizeStr(team.name).includes(searchTerm) || normalizeStr(team.code).includes(searchTerm);
-                
                 let sHtml = `<div class="stickers">`;
                 for(let i=1; i<=team.total; i++) {
                     total++;
@@ -195,11 +139,9 @@
                     const status = db[id] || '';
                     if(status === 'have' || status === 'repeat') haveCount++;
                     if(status === 'repeat') { repCount++; repArr.push(id); }
-
                     let show = true;
                     if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) show = false;
                     if(currentFilter === 'repeats' && status !== 'repeat') show = false;
-
                     if(show && nameMatch) {
                         teamVisible = true; groupVisible = true;
                         sHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`;
@@ -212,7 +154,6 @@
                     grid.appendChild(sec);
                 }
             });
-
             if(groupVisible) {
                 container.appendChild(title); container.appendChild(grid);
                 main.appendChild(container);
@@ -221,7 +162,7 @@
 
         let p = ((haveCount / total) * 100).toFixed(1);
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${haveCount} de ${total} FIGURINHAS (${p}%)`;
+        document.getElementById('stats').innerText = `${haveCount} de ${total} COMPLETAS (${p}%)`;
         document.getElementById('repeatList').innerHTML = `<strong>🔄 REPETIDAS:</strong> ` + (repArr.length > 0 ? repArr.sort().join(", ") : "NENHUMA");
     }
     render();
