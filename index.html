@@ -36,7 +36,6 @@
 
         .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; padding: 20px; }
 
-        /* --- O CHARME DO HOVER --- */
         .section { 
             background: var(--card-bg); 
             width: 320px; 
@@ -57,6 +56,10 @@
 
         .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         
+        /* Badge de contador por seleção */
+        .team-count { font-size: 0.7em; padding: 2px 8px; border-radius: 10px; background: #eee; color: #666; font-weight: bold; }
+        .team-count.complete { background: var(--mex-green); color: white; }
+
         .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         
         .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; transition: 0.2s; }
@@ -132,12 +135,14 @@
     let currentFilter = 'all';
 
     function normalizeStr(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+    
     function toggle(id) {
         if (!db[id]) db[id] = 'have';
         else if (db[id] === 'have') db[id] = 'repeat';
         else delete db[id];
         save();
     }
+
     function setFilter(f) {
         currentFilter = f;
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
@@ -146,6 +151,7 @@
         if(f==='repeats') document.getElementById('fRepeat').classList.add('active');
         render();
     }
+
     function save() { localStorage.setItem('copa2026_Trionda_vFinal', JSON.stringify(db)); render(); }
     function exportBackup() { alert(btoa(JSON.stringify(db))); }
     function importBackup() { let c = prompt("Cole o backup:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
@@ -155,7 +161,7 @@
         const main = document.getElementById('mainContent');
         const searchTerm = normalizeStr(document.getElementById('teamSearch').value);
         main.innerHTML = '';
-        let total = 0, haveCount = 0, repCount = 0, repArr = [];
+        let totalStickers = 0, totalHave = 0, repCount = 0, repArr = [];
         
         albumData.forEach(g => {
             let groupVisible = false;
@@ -164,39 +170,59 @@
             const grid = document.createElement('div'); grid.className = 'album-grid';
 
             g.teams.forEach(team => {
-                let teamVisible = false;
+                let teamHave = 0;
+                let teamStickersHtml = "";
+                let teamVisibleInFilter = false;
                 const nameMatch = normalizeStr(team.name).includes(searchTerm) || normalizeStr(team.code).includes(searchTerm);
-                let sHtml = `<div class="stickers">`;
+
                 for(let i=1; i<=team.total; i++) {
-                    total++;
+                    totalStickers++;
                     const id = `${team.code} ${i<10?'0'+i:i}`;
                     const status = db[id] || '';
-                    if(status === 'have' || status === 'repeat') haveCount++;
-                    if(status === 'repeat') { repCount++; repArr.push(id); }
+                    
+                    if(status === 'have' || status === 'repeat') {
+                        totalHave++;
+                        teamHave++;
+                    }
+                    if(status === 'repeat') {
+                        repCount++;
+                        repArr.push(id);
+                    }
+
                     let show = true;
                     if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) show = false;
                     if(currentFilter === 'repeats' && status !== 'repeat') show = false;
+
                     if(show && nameMatch) {
-                        teamVisible = true; groupVisible = true;
-                        sHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`;
+                        teamVisibleInFilter = true;
+                        groupVisible = true;
+                        teamStickersHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`;
                     }
                 }
-                sHtml += `</div>`;
-                if(teamVisible) {
+
+                if(teamVisibleInFilter) {
                     const sec = document.createElement('div'); sec.className = 'section';
-                    sec.innerHTML = `<h2>${team.name} <small style="color:#aaa">${team.code}</small></h2>` + sHtml;
+                    const isComplete = teamHave === team.total;
+                    sec.innerHTML = `
+                        <h2>
+                            <span>${team.name} <small style="color:#aaa; font-size:0.7em">${team.code}</small></span>
+                            <span class="team-count ${isComplete ? 'complete' : ''}">${teamHave}/${team.total}</span>
+                        </h2>
+                        <div class="stickers">${teamStickersHtml}</div>`;
                     grid.appendChild(sec);
                 }
             });
+
             if(groupVisible) {
-                container.appendChild(title); container.appendChild(grid);
+                container.appendChild(title);
+                container.appendChild(grid);
                 main.appendChild(container);
             }
         });
 
-        let p = ((haveCount / total) * 100).toFixed(1);
+        let p = ((totalHave / totalStickers) * 100).toFixed(1);
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${haveCount} de ${total} FIGURINHAS (${p}%)`;
+        document.getElementById('stats').innerText = `${totalHave} de ${totalStickers} COMPLETAS (${p}%)`;
         document.getElementById('repeatList').innerHTML = `<strong>🔄 REPETIDAS:</strong> ` + (repArr.length > 0 ? repArr.sort().join(", ") : "NENHUMA");
     }
     render();
