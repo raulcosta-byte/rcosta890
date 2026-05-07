@@ -78,7 +78,7 @@
         { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
     ];
 
-    let db = JSON.parse(localStorage.getItem('copa2026_vFinal_v10')) || {};
+    let db = JSON.parse(localStorage.getItem('copa2026_vFinal_v11')) || {};
     let currentFilter = 'all';
 
     function normalizeStr(str) {
@@ -101,7 +101,7 @@
         render();
     }
 
-    function save() { localStorage.setItem('copa2026_vFinal_v10', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('copa2026_vFinal_v11', JSON.stringify(db)); render(); }
     function exportBackup() { alert(btoa(JSON.stringify(db))); }
     function importBackup() { let c = prompt("Cole o backup:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
     function resetData() { if(confirm("Zerar?")) {db={};save();location.reload();}}
