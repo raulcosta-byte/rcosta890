@@ -27,9 +27,9 @@
         .section { background: white; padding: 10px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-top: 3px solid var(--primary); }
         .section h2 { margin: 0 0 8px 0; font-size: 0.85rem; color: #333; border-bottom: 1px solid #eee; }
         .stickers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-        .s { background: #fff; border: 1px solid #ddd; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.7em; font-weight: 900; }
-        .s.have { background: var(--have) !important; color: white; border-color: transparent; }
-        .s.repeat { background: var(--repeat) !important; color: white; border-color: transparent; }
+        .s { background: #fff; border: 1px solid #ddd; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.7em; font-weight: 900; color: #444; }
+        .s.have { background: var(--have) !important; color: white !important; border-color: transparent; }
+        .s.repeat { background: var(--repeat) !important; color: white !important; border-color: transparent; }
         .backup-controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
         .btn-action { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.6em; }
     </style>
@@ -74,11 +74,12 @@
         { group: "GRUPO H", teams: [{ name: "🇪🇸 Espanha", code: "ESP", total: 20 }, { name: "🇨🇻 Cabo Verde", code: "CPV", total: 20 }, { name: "🇸🇦 Arábia S.", code: "KSA", total: 20 }, { name: "🇺🇾 Uruguai", code: "URU", total: 20 }]},
         { group: "GRUPO I", teams: [{ name: "🇫🇷 França", code: "FRA", total: 20 }, { name: "🇸🇳 Senegal", code: "SEN", total: 20 }, { name: "🇮🇶 Bolivia/BOL", code: "BOL", total: 20 }, { name: "🇳🇴 Noruega", code: "NOR", total: 20 }]},
         { group: "GRUPO J", teams: [{ name: "🇦🇷 Argentina", code: "ARG", total: 20 }, { name: "🇩🇿 Argélia", code: "ALG", total: 20 }, { name: "🇦🇹 Áustria", code: "AUT", total: 20 }, { name: "🇯🇴 Jordânia", code: "JOR", total: 20 }]},
-        { group: "GRUPO K", teams: [{ name: "🇵🇹 Portugal", code: "POR", total: 20 }, { name: "🇨🇩 RD Congo", code: "COD", total: 20 }, { name: "🇺🇿 Uzbequistão", code: "UZB", total: 20 }, { name: "🇨🇴 Colômbia", code: "COL", total: 20 }]},
+        { group: "GRUPO K", teams: [{ name: "🇵🇹 Portugal", code: "POR", total: 20 }, { name: "🇨🇩 RD Congo", code: "COD", total: 20 }, { name: "Uzbequistan", code: "UZB", total: 20 }, { name: "🇨🇴 Colômbia", code: "COL", total: 20 }]},
         { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
     ];
 
-    let db = JSON.parse(localStorage.getItem('copa2026_vFinal_v11')) || {};
+    // USANDO V15 PARA MATAR O CACHE ANTIGO
+    let db = JSON.parse(localStorage.getItem('copa2026_v15')) || {};
     let currentFilter = 'all';
 
     function normalizeStr(str) {
@@ -101,7 +102,7 @@
         render();
     }
 
-    function save() { localStorage.setItem('copa2026_vFinal_v11', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('copa2026_v15', JSON.stringify(db)); render(); }
     function exportBackup() { alert(btoa(JSON.stringify(db))); }
     function importBackup() { let c = prompt("Cole o backup:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
     function resetData() { if(confirm("Zerar?")) {db={};save();location.reload();}}
@@ -135,4 +136,35 @@
                     if(status === 'repeat') { repCount++; repArr.push(id); }
 
                     let showByStatus = true;
-                    if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) showByStatus
+                    if(currentFilter === 'missing' && (status === 'have' || status === 'repeat')) showByStatus = false;
+                    if(currentFilter === 'repeats' && status !== 'repeat') showByStatus = false;
+
+                    if(showByStatus && (nameMatch || codeMatch || groupMatch)) {
+                        teamVisible = true; groupVisible = true;
+                        const s = document.createElement('div'); s.id = id; s.className = 's ' + status;
+                        s.innerText = id; s.onclick = () => toggle(id); sts.appendChild(s);
+                    }
+                }
+                if(teamVisible) { sec.appendChild(sts); grid.appendChild(sec); }
+            });
+            if(groupVisible) { main.appendChild(tDiv); main.appendChild(grid); }
+        });
+
+        let p = ((haveCount / total) * 100).toFixed(1);
+        document.getElementById('pb').style.width = p + "%";
+        document.getElementById('stats').innerText = `${haveCount}/${total} (${p}%) | Rep: ${repCount}`;
+        document.getElementById('repeatList').innerText = repArr.length > 0 ? repArr.sort().join(", ") : "Nenhuma.";
+    }
+    render();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then(reg => console.log('Offline ok'));
+    });
+  }
+</script>
+
+</body>
+</html>
