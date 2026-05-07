@@ -109,7 +109,7 @@
         { group: "GRUPO B", teams: [{ name: "🇨🇦 Canadá", code: "CAN", total: 20 }, { name: "🇧🇦 Bósnia", code: "BIH", total: 20 }, { name: "🇶🇦 Catar", code: "QAT", total: 20 }, { name: "🇨🇭 Suíça", code: "SUI", total: 20 }]},
         { group: "GRUPO C", teams: [{ name: "🇧🇷 Brasil", code: "BRA", total: 20 }, { name: "🇲🇦 Marrocos", code: "MAR", total: 20 }, { name: "🇭🇹 Haiti", code: "HAI", total: 20 }, { name: "🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escócia", code: "SCO", total: 20 }]},
         { group: "GRUPO D", teams: [{ name: "🇺🇸 EUA", code: "USA", total: 20 }, { name: "🇵🇾 Paraguai", code: "PAR", total: 20 }, { name: "🇦🇺 Austrália", code: "AUS", total: 20 }, { name: "🇹🇷 Turquia", code: "TUR", total: 20 }]},
-        { group: "GRUPO E", teams: [{ name: "🇩🇪 Alemanha", code: "GER", total: 20 }, { name: "🇨🇼 Curaçao", code: "CUW", total: 20 }, { name: "🇨🇮 C. Marfim", code: "CIV", total: 20 }, { name: "🇪🇨 Equador", code: "ECU", total: 20 }]},
+        { group: "GRUPO E", teams: [{ name: "🇩🇪 Alemanha", code: "GER", total: 20 }, { name: "🇨🇼 Curaçao", code: "CUW", total: 20 }, { name: "🇨🇮 Costa do Marfim", code: "CIV", total: 20 }, { name: "🇪🇨 Equador", code: "ECU", total: 20 }]},
         { group: "GRUPO F", teams: [{ name: "🇳🇱 Holanda", code: "NED", total: 20 }, { name: "🇯🇵 Japão", code: "JPN", total: 20 }, { name: "🇸🇪 Suécia", code: "SWE", total: 20 }, { name: "🇹🇳 Tunísia", code: "TUN", total: 20 }]},
         { group: "GRUPO G", teams: [{ name: "🇧🇪 Bélgica", code: "BEL", total: 20 }, { name: "🇪🇬 Egito", code: "EGY", total: 20 }, { name: "🇮🇷 Irã", code: "IRN", total: 20 }, { name: "🇳🇿 N. Zelândia", code: "NZL", total: 20 }]},
         { group: "GRUPO H", teams: [{ name: "🇪🇸 Espanha", code: "ESP", total: 20 }, { name: "🇨🇻 Cabo Verde", code: "CPV", total: 20 }, { name: "🇸🇦 Arábia S.", code: "KSA", total: 20 }, { name: "🇺🇾 Uruguai", code: "URU", total: 20 }]},
@@ -118,6 +118,23 @@
         { group: "GRUPO K", teams: [{ name: "🇵🇹 Portugal", code: "POR", total: 20 }, { name: "🇨🇩 RD Congo", code: "COD", total: 20 }, { name: "🇺🇿 Uzbequistão", code: "UZB", total: 20 }, { name: "🇨🇴 Colômbia", code: "COL", total: 20 }]},
         { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇬🇷 Grécia", code: "GRE", total: 20 }]}
     ];
+
+    // Mapeamento manual de bandeiras para garantir visual no Chrome/Windows
+    const flags = {
+        MEX: "🇲🇽", RSA: "🇿🇦", KOR: "🇰🇷", CZE: "🇨🇿",
+        CAN: "🇨🇦", BIH: "🇧🇦", QAT: "🇶🇦", SUI: "🇨🇭",
+        BRA: "🇧🇷", MAR: "🇲🇦", HAI: "🇭🇹", SCO: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+        USA: "🇺🇸", PAR: "🇵🇾", AUS: "🇦🇺", TUR: "🇹🇷",
+        GER: "🇩🇪", CUW: "🇨🇼", CIV: "🇨🇮", ECU: "🇪🇨",
+        NED: "🇳🇱", JPN: "🇯🇵", SWE: "🇸🇪", TUN: "🇹🇳",
+        BEL: "🇧🇪", EGY: "🇪🇬", IRN: "🇮🇷", NZL: "🇳🇿",
+        ESP: "🇪🇸", CPV: "🇨🇻", KSA: "🇸🇦", URU: "🇺🇾",
+        FRA: "🇫🇷", SEN: "🇸🇳", IRQ: "🇮🇶", NOR: "🇳🇴",
+        ARG: "🇦🇷", ALG: "🇩🇿", AUT: "🇦🇹", JOR: "🇯🇴",
+        POR: "🇵🇹", COD: "🇨🇩", UZB: "🇺🇿", COL: "🇨🇴",
+        ENG: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", CRO: "🇭🇷", GHA: "🇬🇭", GRE: "🇬🇷",
+        FWC: "🏆", MUS: "🏛️", CC: "🥤"
+    };
 
     let db = JSON.parse(localStorage.getItem('copa2026_vFinal_Fixed')) || {};
     let currentFilter = 'all';
@@ -211,7 +228,8 @@
 
                 if(tHtml !== "") {
                     const sec = document.createElement('div'); sec.className = 'section';
-                    sec.innerHTML = `<h2><span>${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
+                    const flagIcon = flags[team.code] || "";
+                    sec.innerHTML = `<h2><span>${flagIcon} ${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
                     grid.appendChild(sec);
                 }
             });
