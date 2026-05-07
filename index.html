@@ -17,24 +17,58 @@
             --repeat: #f39c12; 
         }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 50px; }
+        
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
         .header { background: white; padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
+        
         .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #555; font-size: 0.9em; }
+        
         .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 10px; margin-bottom: 10px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 1s ease; }
-        #teamSearch { width: 90%; max-width: 500px; padding: 12px; border-radius: 30px; border: 2px solid #ddd; outline: none; margin-bottom: 15px; }
+        
+        #teamSearch { width: 90%; max-width: 500px; padding: 12px; border-radius: 30px; border: 2px solid #ddd; outline: none; margin-bottom: 15px; transition: 0.3s; }
+        #teamSearch:focus { border-color: var(--usa-blue); box-shadow: 0 0 8px rgba(0,40,104,0.2); }
+
         .filter-bar { display: flex; justify-content: center; gap: 8px; }
-        .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 20px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
+        .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 20px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-filter.active { background: var(--usa-blue); color: white; border-color: var(--usa-blue); }
-        .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 15px; }
-        .section { background: var(--card-bg); width: 320px; padding: 18px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 8px; display: flex; justify-content: space-between; }
-        .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
-        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; }
-        .s.have { background: var(--have) !important; color: white !important; border: none; }
-        .s.repeat { background: var(--repeat) !important; color: white !important; border: none; }
-        .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px; text-transform: uppercase; }
-        .btn-action { background: #f8f9fa; border: 1px solid #ddd; color: #666; padding: 5px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; margin: 0 2px; }
+
+        .album-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; padding: 20px; }
+
+        /* --- O CHARME DO HOVER --- */
+        .section { 
+            background: var(--card-bg); 
+            width: 320px; 
+            padding: 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            border: 1px solid #eee;
+            border-bottom: 4px solid #eee;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: default;
+        }
+
+        .section:hover { 
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            border-bottom: 4px solid var(--usa-blue);
+        }
+
+        .section h2 { margin: 0 0 15px 0; font-size: 1rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        
+        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.7em; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .s:hover { background: #e9ecef; transform: scale(1.05); }
+        
+        .s.have { background: var(--have) !important; color: white !important; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .s.repeat { background: var(--repeat) !important; color: white !important; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .group-title { color: var(--usa-blue); font-size: 1.6em; font-weight: 900; text-align: center; padding: 20px 0; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .btn-action { background: #f8f9fa; border: 1px solid #ddd; color: #666; padding: 6px 14px; border-radius: 6px; font-size: 0.7em; cursor: pointer; margin: 0 3px; transition: 0.2s; }
+        .btn-action:hover { background: #eee; }
     </style>
 </head>
 <body>
@@ -162,7 +196,7 @@
 
         let p = ((haveCount / total) * 100).toFixed(1);
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${haveCount} de ${total} COMPLETAS (${p}%)`;
+        document.getElementById('stats').innerText = `${haveCount} de ${total} FIGURINHAS (${p}%)`;
         document.getElementById('repeatList').innerHTML = `<strong>🔄 REPETIDAS:</strong> ` + (repArr.length > 0 ? repArr.sort().join(", ") : "NENHUMA");
     }
     render();
