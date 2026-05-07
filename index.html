@@ -88,7 +88,7 @@
     <div id="groupDashboard"></div>
 
     <div class="repeat-panel">
-        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção (ex: Brasil, MEX...)" oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; margin-bottom: 5px;">
+        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção..." oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; margin-bottom: 5px;">
         <div id="visualRepeatList">Nenhuma repetida.</div>
         <div class="filter-bar">
             <button class="btn-filter active" id="fAll" onclick="setFilter('all')">TUDO</button>
@@ -113,13 +113,12 @@
         { group: "GRUPO F", teams: [{ name: "🇳🇱 Holanda", code: "NED", total: 20 }, { name: "🇯🇵 Japão", code: "JPN", total: 20 }, { name: "🇸🇪 Suécia", code: "SWE", total: 20 }, { name: "🇹🇳 Tunísia", code: "TUN", total: 20 }]},
         { group: "GRUPO G", teams: [{ name: "🇧🇪 Bélgica", code: "BEL", total: 20 }, { name: "🇪🇬 Egito", code: "EGY", total: 20 }, { name: "🇮🇷 Irã", code: "IRN", total: 20 }, { name: "🇳🇿 N. Zelândia", code: "NZL", total: 20 }]},
         { group: "GRUPO H", teams: [{ name: "🇪🇸 Espanha", code: "ESP", total: 20 }, { name: "🇨🇻 Cabo Verde", code: "CPV", total: 20 }, { name: "🇸🇦 Arábia S.", code: "KSA", total: 20 }, { name: "🇺🇾 Uruguai", code: "URU", total: 20 }]},
-        { group: "GRUPO I", teams: [{ name: "🇫🇷 França", code: "FRA", total: 20 }, { name: "🇸🇳 Senegal", code: "SEN", total: 20 }, { name: "🇮🇶 Bolívia", code: "BOL", total: 20 }, { name: "🇳🇴 Noruega", code: "NOR", total: 20 }]},
+        { group: "GRUPO I", teams: [{ name: "🇫🇷 França", code: "FRA", total: 20 }, { name: "🇸🇳 Senegal", code: "SEN", total: 20 }, { name: "🇮🇶 Iraque", code: "IRQ", total: 20 }, { name: "🇳🇴 Noruega", code: "NOR", total: 20 }]},
         { group: "GRUPO J", teams: [{ name: "🇦🇷 Argentina", code: "ARG", total: 20 }, { name: "🇩🇿 Argélia", code: "ALG", total: 20 }, { name: "🇦🇹 Áustria", code: "AUT", total: 20 }, { name: "🇯🇴 Jordânia", code: "JOR", total: 20 }]},
         { group: "GRUPO K", teams: [{ name: "🇵🇹 Portugal", code: "POR", total: 20 }, { name: "🇨🇩 RD Congo", code: "COD", total: 20 }, { name: "🇺🇿 Uzbequistão", code: "UZB", total: 20 }, { name: "🇨🇴 Colômbia", code: "COL", total: 20 }]},
-        { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇵🇦 Panamá", code: "PAN", total: 20 }]}
+        { group: "GRUPO L", teams: [{ name: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra", code: "ENG", total: 20 }, { name: "🇭🇷 Croácia", code: "CRO", total: 20 }, { name: "🇬🇭 Gana", code: "GHA", total: 20 }, { name: "🇬🇷 Grécia", code: "GRE", total: 20 }]}
     ];
 
-    // USANDO vFinal_Fixed para evitar conflito
     let db = JSON.parse(localStorage.getItem('copa2026_vFinal_Fixed')) || {};
     let currentFilter = 'all';
 
@@ -159,8 +158,22 @@
         navigator.clipboard.writeText(text).then(() => alert("Lista copiada! Só colar no Whats."));
     }
 
-    function exportBackup() { alert(btoa(JSON.stringify(db))); }
-    function importBackup() { let c = prompt("Cole o código:"); if(c){db=JSON.parse(atob(c));save();location.reload();}}
+    function exportBackup() { 
+        let code = btoa(JSON.stringify(db));
+        window.prompt("Copie seu código de backup:", code);
+    }
+
+    function importBackup() { 
+        let c = prompt("Cole o código de backup:"); 
+        if(c){
+            try {
+                db = JSON.parse(atob(c)); 
+                save(); 
+                location.reload();
+            } catch(e) { alert("Erro no código!"); }
+        }
+    }
+
     function resetData() { if(confirm("Apagar tudo?")) {db={};save();location.reload();}}
 
     function render() {
@@ -212,13 +225,12 @@
             }
         });
 
-        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida marcada.";
+        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida.";
         let p = ((totalHave / totalStickers) * 100).toFixed(1);
         document.getElementById('pb').style.width = p + "%";
         document.getElementById('stats').innerText = `${totalHave}/${totalStickers} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
     }
     
-    // Inicialização forçada
     document.addEventListener('DOMContentLoaded', render);
     render();
 </script>
