@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Ultra Fix</title>
+    <title>Copa 26 Tracker - Full Search</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
@@ -34,7 +34,7 @@
         .s.repeat { background: var(--repeat) !important; color: white !important; }
         .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
-        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; }
+        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         #fileInput { display: none; }
     </style>
 </head>
@@ -45,7 +45,7 @@
         <div style="font-size: 2.2em; font-weight: 900; line-height: 1;"><span style="color: var(--usa-blue);">COPA</span> 26</div>
         <div style="font-size: 0.8em; font-weight: 800; letter-spacing: 4px; color: #888;">TRACKER</div>
         <div class="progress-container" style="margin-top:15px"><div class="progress-bar" id="pb"></div></div>
-        <div id="stats">0 / 0 (0%)</div>
+        <div id="stats">Calculando...</div>
         <div class="backup-controls">
             <button class="btn-action" onclick="toggleDashboard()">DETALHES</button>
             <button class="btn-action" onclick="exportData()">EXPORTAR TXT</button>
@@ -56,8 +56,8 @@
     </div>
     <div id="groupDashboard"></div>
     <div class="repeat-panel">
-        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção..." oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none;">
-        <div id="visualRepeatList">Nenhuma repetida marcada.</div>
+        <input type="text" id="teamSearch" placeholder="🔍 Buscar seleção, grupo ou código..." oninput="render()" style="width: 85%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none;">
+        <div id="visualRepeatList">Nenhuma repetida.</div>
         <div class="filter-bar">
             <button class="btn-filter active" id="fAll" onclick="setFilter('all')">TUDO</button>
             <button class="btn-filter" id="fMissing" onclick="setFilter('missing')">FALTAM</button>
@@ -106,10 +106,7 @@
         document.getElementById('f' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
         render();
     }
-    function toggleDashboard() { 
-        const d = document.getElementById('groupDashboard');
-        d.style.display = (d.style.display === 'block') ? 'none' : 'block';
-    }
+    function toggleDashboard() { const d = document.getElementById('groupDashboard'); d.style.display = (d.style.display === 'block') ? 'none' : 'block'; }
     function exportData() {
         const data = btoa(JSON.stringify(db));
         const a = document.createElement('a');
@@ -120,13 +117,7 @@
     function importData(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = function(f) { 
-            try { 
-                db = JSON.parse(atob(f.target.result.split(',')[1] || f.target.result)); 
-                save(); 
-                location.reload(); 
-            } catch(err){alert('Erro ao importar arquivo');} 
-        };
+        reader.onload = function(f) { try { db = JSON.parse(atob(f.target.result.split(',')[1] || f.target.result)); save(); location.reload(); } catch(err){alert('Erro ao importar arquivo');} };
         reader.readAsText(file);
     }
     function resetData() { if(confirm("Zerar álbum?")) {db={};save();location.reload();}}
@@ -145,26 +136,33 @@
         const searchTerm = (document.getElementById('teamSearch').value || "").toLowerCase();
         
         main.innerHTML = ''; dash.innerHTML = '<strong>Progresso por Grupo:</strong>';
-        let total = 0, have = 0, repArr = [];
+        let total = 0, haveCount = 0, repArr = [];
 
         albumData.forEach(g => {
             let gTotal = 0, gHave = 0, groupVisible = false;
             const grid = document.createElement('div'); grid.className = 'album-grid';
             
+            // VERIFICA SE O TERMO DE BUSCA BATE COM O NOME DO GRUPO (Ex: "Grupo A")
+            const groupMatchesSearch = g.group.toLowerCase().includes(searchTerm);
+
             g.teams.forEach(team => {
                 let tHave = 0, tHtml = "";
-                const nameMatch = team.name.toLowerCase().includes(searchTerm) || team.code.toLowerCase().includes(searchTerm);
+                // VERIFICA SE BATE COM NOME DO PAÍS OU CÓDIGO
+                const teamMatchesSearch = team.name.toLowerCase().includes(searchTerm) || team.code.toLowerCase().includes(searchTerm);
                 
                 for(let i=1; i<=team.total; i++) {
                     total++; gTotal++;
                     const id = `${team.code} ${i<10?'0'+i:i}`;
                     const status = db[id] || '';
-                    if(status !== '') { have++; gHave++; tHave++; }
+                    if(status !== '') { haveCount++; gHave++; tHave++; }
                     if(status === 'repeat') repArr.push(id);
                     
-                    let show = (currentFilter === 'all') || (currentFilter === 'missing' && status === '') || (currentFilter === 'repeats' && status === 'repeat');
-                    if(show && nameMatch) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
+                    let showFilter = (currentFilter === 'all') || (currentFilter === 'missing' && status === '') || (currentFilter === 'repeats' && status === 'repeat');
+                    
+                    // MOSTRA SE O FILTRO BATER E (O GRUPO BATER OU O TIME BATER)
+                    if(showFilter && (groupMatchesSearch || teamMatchesSearch)) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
                 }
+
                 if(tHtml !== "") {
                     const sec = document.createElement('div'); sec.className = 'section';
                     let iconHtml = (team.isEmoji) ? `<span style="margin-right:8px; font-size:1.2em;">${team.icon}</span>` : `<img class="flag-img" src="https://flagcdn.com/w40/${team.icon}.png">`;
@@ -172,16 +170,18 @@
                     grid.appendChild(sec);
                 }
             });
+
             dash.innerHTML += `<div class="dash-item"><span>${g.group}</span><strong>${gTotal > 0 ? ((gHave/gTotal)*100).toFixed(0) : 0}%</strong></div>`;
             if(groupVisible) {
                 const title = document.createElement('div'); title.className = 'group-title'; title.innerText = g.group;
                 main.appendChild(title); main.appendChild(grid);
             }
         });
-        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida marcada.";
-        let p = (total > 0) ? (have/total*100).toFixed(1) : 0;
+
+        visualReps.innerText = repArr.length > 0 ? "🔄 REPETIDAS: " + repArr.sort().join(", ") : "Nenhuma repetida.";
+        let p = (total > 0) ? (haveCount/total*100).toFixed(1) : 0;
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${have} / ${total} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
+        document.getElementById('stats').innerText = `${haveCount} / ${total} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
     }
     render();
 </script>
