@@ -8,16 +8,31 @@
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
             --bg: #fdfdfd; --card-bg: #ffffff; --text-dark: #222222;
-            --have: #2ecc71; --repeat: #f39c12; --locked: #e74c3c;
+            --have: #2ecc71; --repeat: #f39c12; --danger: #e74c3c;
         }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 100px; }
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
         .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
         
-        /* Estilo do Botão de Bloqueio */
+        /* Botão de Bloqueio - Cores Invertidas */
         .lock-control { margin-bottom: 10px; }
-        .btn-lock { background: #f8f9fa; border: 2px solid #ddd; padding: 8px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.8em; }
-        .btn-lock.unlocked { border-color: var(--locked); color: var(--locked); background: #fff5f5; }
+        .btn-lock { 
+            background: #fff5f5; 
+            border: 2px solid var(--danger); 
+            color: var(--danger); 
+            padding: 8px 20px; 
+            border-radius: 25px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 0.85em; 
+        }
+        /* Quando está Verde (Desbloqueado) */
+        .btn-lock.unlocked { 
+            border-color: var(--have); 
+            color: var(--have); 
+            background: #f5fff5; 
+        }
         
         #groupDashboard { display: none; background: #f9f9f9; padding: 15px; border-bottom: 1px solid #ddd; max-height: 250px; overflow-y: auto; font-size: 0.8em; }
         .dash-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
@@ -38,8 +53,7 @@
         .s.have { background: var(--have) !important; color: white !important; border: none; }
         .s.repeat { background: var(--repeat) !important; color: white !important; border: none; }
         
-        /* Estado Bloqueado */
-        .stickers.locked .s { cursor: not-allowed; opacity: 0.9; }
+        .stickers.locked .s { cursor: not-allowed; opacity: 0.85; }
 
         .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
@@ -83,7 +97,7 @@
 <button id="shareBtn" onclick="generateShareList()">GERAR LISTA WHATSAPP</button>
 
 <script>
-    let isLocked = true; // Começa bloqueado para segurança
+    let isLocked = true;
 
     const albumData = [
         { group: "ESPECIAIS", teams: [
@@ -124,11 +138,11 @@
             btn.innerText = "🔓 DESBLOQUEADO (Edição)";
             btn.classList.add('unlocked');
         }
-        render(); // Re-renderiza para aplicar a classe de bloqueio visual
+        render();
     }
 
     function toggle(id) {
-        if(isLocked) return; // Se estiver travado, não faz nada
+        if(isLocked) return;
         if (!db[id]) db[id] = 'have';
         else if (db[id] === 'have') db[id] = 'repeat';
         else delete db[id];
@@ -216,7 +230,6 @@
                 if(tHtml !== "") {
                     const sec = document.createElement('div'); sec.className = 'section';
                     let iconHtml = (team.isEmoji) ? `<span style="margin-right:8px; font-size:1.2em;">${team.icon}</span>` : `<img class="flag-img" src="https://flagcdn.com/w40/${team.icon}.png">`;
-                    // Aplica classe locked na grid de figurinhas se isLocked for true
                     sec.innerHTML = `<h2><span>${iconHtml} ${team.name}</span> <span class="team-count ${tHave===tTotalInSec?'complete':''}">${tHave}/${tTotalInSec}</span></h2><div class="stickers ${isLocked ? 'locked' : ''}">${tHtml}</div>`;
                     grid.appendChild(sec);
                 }
