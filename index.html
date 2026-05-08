@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Full Search</title>
+    <title>Copa 26 Tracker - Final v3.1</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
@@ -72,9 +72,9 @@
 <script>
     const albumData = [
         { group: "ESPECIAIS", teams: [
-            { name: "Intro", code: "FWC", icon: "🚩", isEmoji: true, total: 19 }, 
-            { name: "Museum", code: "MUS", icon: "🏛️", isEmoji: true, total: 19 }, 
-            { name: "Coca", code: "CC", icon: "🥤", isEmoji: true, total: 12 }
+            { name: "Intro", code: "FWC", icon: "🚩", isEmoji: true, start: 0, total: 19 }, 
+            { name: "Museum", code: "MUS", icon: "🏛️", isEmoji: true, start: 1, total: 19 }, 
+            { name: "Coca", code: "CC", icon: "🥤", isEmoji: true, start: 1, total: 12 }
         ]},
         { group: "GRUPO A", teams: [{ name: "México", code: "MEX", icon: "mx", total: 20 }, { name: "África do Sul", code: "RSA", icon: "za", total: 20 }, { name: "Coreia Sul", code: "KOR", icon: "kr", total: 20 }, { name: "Rep. Tcheca", code: "CZE", icon: "cz", total: 20 }]},
         { group: "GRUPO B", teams: [{ name: "Canadá", code: "CAN", icon: "ca", total: 20 }, { name: "Bósnia", code: "BIH", icon: "ba", total: 20 }, { name: "Catar", code: "QAT", icon: "qa", total: 20 }, { name: "Suíça", code: "SUI", icon: "ch", total: 20 }]},
@@ -85,7 +85,7 @@
         { group: "GRUPO G", teams: [{ name: "Bélgica", code: "BEL", icon: "be", total: 20 }, { name: "Egito", code: "EGY", icon: "eg", total: 20 }, { name: "Irã", code: "IRN", icon: "ir", total: 20 }, { name: "N. Zelândia", code: "NZL", icon: "nz", total: 20 }]},
         { group: "GRUPO H", teams: [{ name: "Espanha", code: "ESP", icon: "es", total: 20 }, { name: "Cabo Verde", code: "CPV", icon: "cv", total: 20 }, { name: "Arábia S.", code: "KSA", icon: "sa", total: 20 }, { name: "Uruguai", code: "URU", icon: "uy", total: 20 }]},
         { group: "GRUPO I", teams: [{ name: "França", code: "FRA", icon: "fr", total: 20 }, { name: "Senegal", code: "SEN", icon: "sn", total: 20 }, { name: "Iraque", code: "IRQ", icon: "iq", total: 20 }, { name: "Noruega", code: "NOR", icon: "no", total: 20 }]},
-        { group: "GRUPO J", teams: [{ name: "Argentina", code: "ARG", icon: "ar", total: 20 }, { name: "Argélia", code: "ALG", icon: "dz", total: 20 }, { name: "Áustria", code: "AUT", icon: "at", total: 20 }, { name: "Jordânia", code: "jo", total: 20 }]},
+        { group: "GRUPO J", teams: [{ name: "Argentina", code: "ARG", icon: "ar", total: 20 }, { name: "Argélia", code: "ALG", icon: "dz", total: 20 }, { name: "Áustria", code: "AUT", icon: "at", total: 20 }, { name: "Jordânia", code: "JOR", icon: "jo", total: 20 }]},
         { group: "GRUPO K", teams: [{ name: "Portugal", code: "POR", icon: "pt", total: 20 }, { name: "RD Congo", code: "COD", icon: "cd", total: 20 }, { name: "Uzbequistão", code: "UZB", icon: "uz", total: 20 }, { name: "Colômbia", code: "COL", icon: "co", total: 20 }]},
         { group: "GRUPO L", teams: [{ name: "Inglaterra", code: "ENG", icon: "gb-eng", total: 20 }, { name: "Croácia", code: "CRO", icon: "hr", total: 20 }, { name: "Gana", code: "GHA", icon: "gh", total: 20 }, { name: "Grécia", code: "GRE", icon: "gr", total: 20 }]}
     ];
@@ -141,16 +141,14 @@
         albumData.forEach(g => {
             let gTotal = 0, gHave = 0, groupVisible = false;
             const grid = document.createElement('div'); grid.className = 'album-grid';
-            
-            // VERIFICA SE O TERMO DE BUSCA BATE COM O NOME DO GRUPO (Ex: "Grupo A")
             const groupMatchesSearch = g.group.toLowerCase().includes(searchTerm);
 
             g.teams.forEach(team => {
                 let tHave = 0, tHtml = "";
-                // VERIFICA SE BATE COM NOME DO PAÍS OU CÓDIGO
                 const teamMatchesSearch = team.name.toLowerCase().includes(searchTerm) || team.code.toLowerCase().includes(searchTerm);
                 
-                for(let i=1; i<=team.total; i++) {
+                const startNum = (team.start !== undefined) ? team.start : 1;
+                for(let i = startNum; i <= team.total; i++) {
                     total++; gTotal++;
                     const id = `${team.code} ${i<10?'0'+i:i}`;
                     const status = db[id] || '';
@@ -158,15 +156,13 @@
                     if(status === 'repeat') repArr.push(id);
                     
                     let showFilter = (currentFilter === 'all') || (currentFilter === 'missing' && status === '') || (currentFilter === 'repeats' && status === 'repeat');
-                    
-                    // MOSTRA SE O FILTRO BATER E (O GRUPO BATER OU O TIME BATER)
                     if(showFilter && (groupMatchesSearch || teamMatchesSearch)) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
                 }
 
                 if(tHtml !== "") {
                     const sec = document.createElement('div'); sec.className = 'section';
                     let iconHtml = (team.isEmoji) ? `<span style="margin-right:8px; font-size:1.2em;">${team.icon}</span>` : `<img class="flag-img" src="https://flagcdn.com/w40/${team.icon}.png">`;
-                    sec.innerHTML = `<h2><span>${iconHtml} ${team.name}</span> <span class="team-count ${tHave===team.total?'complete':''}">${tHave}/${team.total}</span></h2><div class="stickers">${tHtml}</div>`;
+                    sec.innerHTML = `<h2><span>${iconHtml} ${team.name}</span> <span class="team-count ${tHave===(team.total - (team.start||1) + 1)?'complete':''}">${tHave}/${(team.total - (team.start||1) + 1)}</span></h2><div class="stickers">${tHtml}</div>`;
                     grid.appendChild(sec);
                 }
             });
