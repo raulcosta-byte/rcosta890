@@ -70,6 +70,7 @@
 <button id="shareBtn" onclick="generateShareList()">GERAR LISTA WHATSAPP</button>
 
 <script>
+    // LISTA DE DADOS OFICIAL ATUALIZADA
     const albumData = [
         { group: "ESPECIAIS", teams: [
             { name: "We-Are-26", code: "FWC", icon: "🚩", isEmoji: true, range: [0, 0] },
@@ -125,12 +126,27 @@
         reader.readAsText(file);
     }
     function resetData() { if(confirm("Zerar álbum?")) {db={};save();location.reload();}}
+
+    // FUNÇÃO DE GERAR LISTA PERSONALIZADA
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) return alert("Sem repetidas!");
-        let text = "⚽ *REPETIDAS COPA 26*\n\n" + reps.sort().join(", ");
-        navigator.clipboard.writeText(text).then(() => alert("Copiado!"));
+        if (reps.length === 0) {
+            // Mudando o nome da janela de alerta (Simulado por texto)
+            alert("Copa Tracker 26 diz:\n\nPutz! Você ainda não marcou nenhuma repetida para trocar.");
+            return;
+        }
+        
+        let totalReps = reps.length;
+        let text = `⚽ *REPETIDAS - COPA 26*\n`;
+        text += `──────────────────\n`;
+        text += `🔥 Tenho *${totalReps}* figurinhas para troca!\n\n`;
+        text += `${reps.sort().join(", ")}\n\n`;
+        text += `_Gerado por Copa Tracker 26_ 🏆`;
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copa Tracker 26 diz:\n\nLista copiada com sucesso! Só colar no grupo de trocas. 🚀");
+        });
     }
 
     function render() {
