@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Official Edition</title>
+    <title>Copa 26 Tracker - Elite Edition</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
@@ -15,22 +15,8 @@
         .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
         
         .lock-control { margin-bottom: 10px; }
-        .btn-lock { 
-            background: #fff5f5; 
-            border: 2px solid var(--danger); 
-            color: var(--danger); 
-            padding: 8px 20px; 
-            border-radius: 25px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            font-size: 0.85em; 
-        }
-        .btn-lock.unlocked { 
-            border-color: var(--have); 
-            color: var(--have); 
-            background: #f5fff5; 
-        }
+        .btn-lock { background: #fff5f5; border: 2px solid var(--danger); color: var(--danger); padding: 8px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 0.85em; }
+        .btn-lock.unlocked { border-color: var(--have); color: var(--have); background: #f5fff5; }
         
         #groupDashboard { display: none; background: #f9f9f9; padding: 15px; border-bottom: 1px solid #ddd; max-height: 250px; overflow-y: auto; font-size: 0.8em; }
         .dash-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
@@ -47,12 +33,11 @@
         .section h2 { margin: 0 0 15px 0; font-size: 0.9rem; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .flag-img { width: 22px; height: auto; vertical-align: middle; margin-right: 8px; border-radius: 2px; }
         .stickers { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.65em; font-weight: 800; cursor: pointer; user-select: none; }
+        .s { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 0; text-align: center; border-radius: 6px; font-size: 0.65em; font-weight: 800; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
         .s.have { background: var(--have) !important; color: white !important; border: none; }
         .s.repeat { background: var(--repeat) !important; color: white !important; border: none; }
         
         .stickers.locked .s { cursor: not-allowed; opacity: 0.85; }
-
         .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
         #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
@@ -64,20 +49,17 @@
 <div class="sticky-header">
     <div class="header">
         <div style="font-size: 2.2em; font-weight: 900; line-height: 1; margin-bottom: 10px;"><span style="color: var(--usa-blue);">COPA</span> 26</div>
-        
         <div class="lock-control">
             <button id="lockBtn" class="btn-lock" onclick="toggleLock()">🔒 BLOQUEADO (Leitura)</button>
         </div>
-
         <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
         <div id="stats">Calculando...</div>
-        
         <div class="backup-controls">
             <button class="btn-action" onclick="toggleDashboard()">DETALHES</button>
             <button class="btn-action" onclick="exportData()">EXPORTAR TXT</button>
             <button class="btn-action" onclick="document.getElementById('fileInput').click()">IMPORTAR TXT</button>
             <input type="file" id="fileInput" accept=".txt,text/plain" onchange="importData(event)">
-            <button class="btn-action" onclick="resetData()" style="color:var(--can-red)">ZERAR</button>
+            <button class="btn-action" onclick="resetData()" style="color:var(--can-red)">ZERAR TUDO</button>
         </div>
     </div>
     <div id="groupDashboard"></div>
@@ -96,8 +78,8 @@
 
 <script>
     let isLocked = true;
+    let pressTimer;
 
-    // Dados atualizados: removidos MUSEUM e EXTRA STICKERS
     const albumData = [
         { group: "ESPECIAIS", teams: [
             { name: "We-Are-26", code: "FWC", icon: "🚩", isEmoji: true, range: [0, 0] },
@@ -138,12 +120,35 @@
         render();
     }
 
-    function toggle(id) {
+    // Lógica de Ciclo Seguro: Vazio -> Tenho -> Repetida -> Tenho...
+    function handleClick(id) {
         if(isLocked) return;
-        if (!db[id]) db[id] = 'have';
-        else if (db[id] === 'have') db[id] = 'repeat';
-        else delete db[id];
+        if (!db[id]) {
+            db[id] = 'have';
+        } else if (db[id] === 'have') {
+            db[id] = 'repeat';
+        } else if (db[id] === 'repeat') {
+            db[id] = 'have'; // Volta para Tenho, não deixa perder a figurinha!
+        }
         save();
+    }
+
+    // Lógica de Toque Longo: Resetar para Cinza (Vazio)
+    function handleLongPress(id) {
+        if(isLocked) return;
+        if (db[id]) {
+            delete db[id];
+            save();
+            if (navigator.vibrate) navigator.vibrate(50); // Feedback tátil
+        }
+    }
+
+    // Gerenciadores de Eventos (Toque e Mouse)
+    function startPress(id) {
+        pressTimer = window.setTimeout(() => handleLongPress(id), 800);
+    }
+    function endPress(id, e) {
+        clearTimeout(pressTimer);
     }
 
     function setFilter(f) {
@@ -152,6 +157,7 @@
         document.getElementById('f' + f.charAt(0).toUpperCase() + f.slice(1)).classList.add('active');
         render();
     }
+    
     function toggleDashboard() { const d = document.getElementById('groupDashboard'); d.style.display = (d.style.display === 'block') ? 'none' : 'block'; }
     
     function exportData() {
@@ -159,11 +165,9 @@
         const blob = new Blob([data], { type: 'text/plain' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const dataHora = new Date().toLocaleDateString().replace(/\//g, '-');
         a.href = url;
-        a.download = `backup-album-copa26-${dataHora}.txt`;
+        a.download = `backup-album-copa26.txt`;
         a.click();
-        window.URL.revokeObjectURL(url);
     }
 
     function importData(e) {
@@ -176,21 +180,21 @@
                 if (rawContent.includes(',')) rawContent = rawContent.split(',')[1];
                 db = JSON.parse(atob(rawContent)); 
                 save(); 
-                alert("Copa Tracker 26 diz:\n\nÁlbum importado com sucesso! 🏆");
+                alert("Importado com sucesso! 🏆");
                 location.reload(); 
-            } catch(err){ alert("Copa Tracker 26 diz:\n\nErro ao importar!"); } 
+            } catch(err){ alert("Erro ao importar!"); } 
         };
         reader.readAsText(file);
     }
 
-    function resetData() { if(confirm("Zerar álbum?")) {db={};save();location.reload();}}
+    function resetData() { if(confirm("Deseja ZERAR TODO o seu progresso?")) {db={};save();location.reload();}}
 
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) { alert("Copa Tracker 26 diz:\n\nPutz! Nenhuma repetida."); return; }
+        if (reps.length === 0) { alert("Nenhuma repetida para trocar."); return; }
         let text = `⚽ *REPETIDAS - COPA 26*\n──────────────────\n🔥 Tenho *${reps.length}* figurinhas para troca!\n\n${reps.sort().join(", ")}\n\n_Gerado por Copa Tracker 26_ 🏆`;
-        navigator.clipboard.writeText(text).then(() => { alert("Copa Tracker 26 diz:\n\nLista copiada! 🚀"); });
+        navigator.clipboard.writeText(text).then(() => { alert("Lista copiada! 🚀"); });
     }
 
     function render() {
@@ -221,7 +225,16 @@
                     if(status !== '') { haveCount++; gHave++; tHave++; }
                     if(status === 'repeat') repArr.push(id);
                     let showFilter = (currentFilter === 'all') || (currentFilter === 'missing' && status === '') || (currentFilter === 'repeats' && status === 'repeat');
-                    if(showFilter && (groupMatchesSearch || teamMatchesSearch)) { groupVisible = true; tHtml += `<div class="s ${status}" onclick="toggle('${id}')">${id}</div>`; }
+                    if(showFilter && (groupMatchesSearch || teamMatchesSearch)) { 
+                        groupVisible = true; 
+                        tHtml += `<div class="s ${status}" 
+                                    onmousedown="startPress('${id}')" 
+                                    onmouseup="endPress('${id}')" 
+                                    onmouseleave="endPress('${id}')"
+                                    ontouchstart="startPress('${id}')" 
+                                    ontouchend="endPress('${id}')"
+                                    onclick="handleClick('${id}')">${id}</div>`; 
+                    }
                 });
 
                 if(tHtml !== "") {
