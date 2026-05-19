@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Elite Edition</title>
+    <title>Copa 26 Tracker - Share Master</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
             --bg: #fdfdfd; --card-bg: #ffffff; --text-dark: #222222;
             --have: #2ecc71; --repeat: #f39c12; --danger: #e74c3c;
         }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 100px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text-dark); margin: 0; padding-bottom: 140px; }
         .sticky-header { position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
         .header { padding: 15px; text-align: center; border-bottom: 5px solid; border-image: linear-gradient(to right, var(--usa-blue), var(--can-red), var(--mex-green)) 1; }
         
@@ -40,7 +40,13 @@
         .stickers.locked .s { cursor: not-allowed; opacity: 0.85; }
         .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
-        #shareBtn { position: fixed; bottom: 20px; right: 20px; background: var(--mex-green); color: white; border: none; padding: 15px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        /* Container dos Botões Flutuantes Embaixo */
+        .footer-controls { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2000; width: 90%; max-width: 500px; }
+        .btn-share { flex: 1; color: white; border: none; padding: 15px 10px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 0.8em; text-align: center; }
+        #shareBtn { background: var(--repeat); }
+        #shareAllBtn { background: var(--usa-blue); }
+        
         #fileInput { display: none; }
     </style>
 </head>
@@ -74,7 +80,11 @@
 </div>
 
 <div id="mainContent"></div>
-<button id="shareBtn" onclick="generateShareList()">GERAR LISTA WHATSAPP</button>
+
+<div class="footer-controls">
+    <button id="shareBtn" class="btn-share" onclick="generateShareList()">🔄 LISTA REPETIDAS</button>
+    <button id="shareAllAlbumBtn" class="btn-share" style="background: var(--mex-green);" onclick="generateFullAlbumList()">📋 TENHO E FALTAM</button>
+</div>
 
 <script>
     let isLocked = true;
@@ -120,36 +130,25 @@
         render();
     }
 
-    // Lógica de Ciclo Seguro: Vazio -> Tenho -> Repetida -> Tenho...
     function handleClick(id) {
         if(isLocked) return;
-        if (!db[id]) {
-            db[id] = 'have';
-        } else if (db[id] === 'have') {
-            db[id] = 'repeat';
-        } else if (db[id] === 'repeat') {
-            db[id] = 'have'; // Volta para Tenho, não deixa perder a figurinha!
-        }
+        if (!db[id]) { db[id] = 'have'; } 
+        else if (db[id] === 'have') { db[id] = 'repeat'; } 
+        else if (db[id] === 'repeat') { db[id] = 'have'; }
         save();
     }
 
-    // Lógica de Toque Longo: Resetar para Cinza (Vazio)
     function handleLongPress(id) {
         if(isLocked) return;
         if (db[id]) {
             delete db[id];
             save();
-            if (navigator.vibrate) navigator.vibrate(50); // Feedback tátil
+            if (navigator.vibrate) navigator.vibrate(50);
         }
     }
 
-    // Gerenciadores de Eventos (Toque e Mouse)
-    function startPress(id) {
-        pressTimer = window.setTimeout(() => handleLongPress(id), 800);
-    }
-    function endPress(id, e) {
-        clearTimeout(pressTimer);
-    }
+    function startPress(id) { pressTimer = window.setTimeout(() => handleLongPress(id), 800); }
+    function endPress(id, e) { clearTimeout(pressTimer); }
 
     function setFilter(f) {
         currentFilter = f;
@@ -189,12 +188,47 @@
 
     function resetData() { if(confirm("Deseja ZERAR TODO o seu progresso?")) {db={};save();location.reload();}}
 
+    // 🔄 FUNÇÃO 1: APENAS REPETIDAS
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) { alert("Nenhuma repetida para trocar."); return; }
+        if (reps.length === 0) { alert("Copa Tracker 26 diz:\n\nNenhuma repetida para trocar."); return; }
         let text = `⚽ *REPETIDAS - COPA 26*\n──────────────────\n🔥 Tenho *${reps.length}* figurinhas para troca!\n\n${reps.sort().join(", ")}\n\n_Gerado por Copa Tracker 26_ 🏆`;
-        navigator.clipboard.writeText(text).then(() => { alert("Lista copiada! 🚀"); });
+        navigator.clipboard.writeText(text).then(() => { alert("Copa Tracker 26 diz:\n\nLista de repetidas copiada! 🚀"); });
+    }
+
+    // 📋 FUNÇÃO NEW: ÁLBUM COMPLETO (TENHO E FALTAM)
+    function generateFullAlbumList() {
+        let haves = [];
+        let missings = [];
+
+        albumData.forEach(g => {
+            g.teams.forEach(team => {
+                let stickerIds = [];
+                if(team.custom) { team.custom.forEach(c => stickerIds.push(`${team.code} ${c}`)); }
+                else if (team.range) { for(let i = team.range[0]; i <= team.range[1]; i++) { stickerIds.push(`${team.code} ${i<10?'0'+i:i}`); } }
+                else { for(let i = 1; i <= team.total; i++) { stickerIds.push(`${team.code} ${i<10?'0'+i:i}`); } }
+
+                stickerIds.forEach(id => {
+                    if (db[id] === 'have' || db[id] === 'repeat') {
+                        haves.push(id);
+                    } else {
+                        missings.push(id);
+                    }
+                });
+            });
+        });
+
+        let text = `📋 *STATUS DO ÁLBUM - COPA 26*\n──────────────────\n\n`;
+        text += `✅ *JÁ TENHO (${haves.length}):*\n`;
+        text += haves.length > 0 ? haves.join(", ") : "Nenhuma ainda 😢";
+        text += `\n\n❌ *ME FALTAM (${missings.length}):*\n`;
+        text += missings.length > 0 ? missings.join(", ") : "ÁLBUM COMPLETO! 🎉";
+        text += `\n\n_Gerado por Copa Tracker 26_ 🏆`;
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copa Tracker 26 diz:\n\nLista completa (Tenho/Faltam) copiada para a área de transferência! Só colar para seu amigo. 📋🚀");
+        });
     }
 
     function render() {
