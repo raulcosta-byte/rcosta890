@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Share Master</title>
+    <title>Copa 26 Tracker - Smart Share</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
@@ -41,11 +41,9 @@
         .group-title { color: var(--usa-blue); font-size: 1.5em; font-weight: 900; text-align: center; padding: 15px 0; text-transform: uppercase; }
         .btn-action { background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; font-size: 0.65em; cursor: pointer; font-weight: bold; }
         
-        /* Container dos Botões Flutuantes Embaixo */
         .footer-controls { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 2000; width: 90%; max-width: 500px; }
         .btn-share { flex: 1; color: white; border: none; padding: 15px 10px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 0.8em; text-align: center; }
         #shareBtn { background: var(--repeat); }
-        #shareAllBtn { background: var(--usa-blue); }
         
         #fileInput { display: none; }
     </style>
@@ -89,6 +87,16 @@
 <script>
     let isLocked = true;
     let pressTimer;
+
+    // Dicionário de ISO de bandeiras para converter em Emojis reais no texto do WhatsApp
+    const isoToEmoji = {
+        "mx": "🇲🇽", "za": "🇿🇦", "kr": "🇰🇷", "cz": "🇨🇿", "ca": "🇨🇦", "ba": "🇧🇦", "qa": "🇶🇦", "ch": "🇨🇭",
+        "br": "🇧🇷", "ma": "🇲🇦", "ht": "🇭🇦", "gb-sct": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "us": "🇺🇸", "py": "🇵🇾", "au": "🇦🇺", "tr": "🇹🇷",
+        "de": "🇩🇪", "cw": "🇨🇼", "ci": "🇨🇮", "ec": "🇪🇨", "nl": "🇳🇱", "jp": "🇯🇵", "se": "🇸🇪", "tn": "🇹🇳",
+        "be": "🇧🇪", "eg": "🇪🇬", "ir": "🇮🇷", "nz": "🇳🇿", "es": "🇪🇸", "cv": "🇨🇻", "sa": "🇸🇦", "uy": "🇺🇾",
+        "fr": "🇫🇷", "sn": "🇸🇳", "iq": "🇮🇶", "no": "🇳🇴", "ar": "🇦🇷", "dz": "🇩🇿", "at": "🇦🇹", "jo": "🇯🇴",
+        "pt": "🇵🇹", "cd": "🇨🇩", "uz": "🇺🇿", "co": "🇨🇴", "gb-eng": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "hr": "🇭🇷", "gh": "🇬🇭", "pa": "🇵🇦"
+    };
 
     const albumData = [
         { group: "ESPECIAIS", teams: [
@@ -186,24 +194,32 @@
         reader.readAsText(file);
     }
 
-    function resetData() { if(confirm("Deseja ZERAR TODO o seu progresso?")) {db={};save();location.reload();}}
+    function resetData() { if(confirm("Deseja ZERAR TADA a sua lista?")) {db={};save();location.reload();}}
 
-    // 🔄 FUNÇÃO 1: APENAS REPETIDAS
     function generateShareList() {
         let reps = [];
         for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) { alert("Copa Tracker 26 diz:\n\nNenhuma repetida para trocar."); return; }
+        if (reps.length === 0) { alert("Nenhuma repetida para trocar."); return; }
         let text = `⚽ *REPETIDAS - COPA 26*\n──────────────────\n🔥 Tenho *${reps.length}* figurinhas para troca!\n\n${reps.sort().join(", ")}\n\n_Gerado por Copa Tracker 26_ 🏆`;
-        navigator.clipboard.writeText(text).then(() => { alert("Copa Tracker 26 diz:\n\nLista de repetidas copiada! 🚀"); });
+        navigator.clipboard.writeText(text).then(() => { alert("Lista copiada! 🚀"); });
     }
 
-    // 📋 FUNÇÃO NEW: ÁLBUM COMPLETO (TENHO E FALTAM)
+    // 📋 NOVA FUNÇÃO: GERA LISTA SUPER ORGANIZADA COM BANDEIRAS E SELEÇÕES
     function generateFullAlbumList() {
-        let haves = [];
-        let missings = [];
+        let totalHavesCount = 0;
+        let totalMissingsCount = 0;
+        
+        let haveTextLines = [];
+        let missingTextLines = [];
 
         albumData.forEach(g => {
             g.teams.forEach(team => {
+                let teamHaves = [];
+                let teamMissings = [];
+                
+                // Define o emoji/bandeira correto para o texto do WhatsApp
+                let flagEmoji = team.isEmoji ? team.icon : (isoToEmoji[team.icon] || "🏳️");
+
                 let stickerIds = [];
                 if(team.custom) { team.custom.forEach(c => stickerIds.push(`${team.code} ${c}`)); }
                 else if (team.range) { for(let i = team.range[0]; i <= team.range[1]; i++) { stickerIds.push(`${team.code} ${i<10?'0'+i:i}`); } }
@@ -211,23 +227,37 @@
 
                 stickerIds.forEach(id => {
                     if (db[id] === 'have' || db[id] === 'repeat') {
-                        haves.push(id);
+                        teamHaves.push(id);
+                        totalHavesCount++;
                     } else {
-                        missings.push(id);
+                        teamMissings.push(id);
+                        totalMissingsCount++;
                     }
                 });
+
+                // Se a seleção tiver figurinhas marcadas, adiciona na seção "Tenho"
+                if(teamHaves.length > 0) {
+                    haveTextLines.push(`${flagEmoji} *${team.name}:* ${teamHaves.join(", ")}`);
+                }
+                // Se a seleção tiver figurinhas faltando, adiciona na seção "Faltam"
+                if(teamMissings.length > 0) {
+                    missingTextLines.push(`${flagEmoji} *${team.name}:* ${teamMissings.join(", ")}`);
+                }
             });
         });
 
         let text = `📋 *STATUS DO ÁLBUM - COPA 26*\n──────────────────\n\n`;
-        text += `✅ *JÁ TENHO (${haves.length}):*\n`;
-        text += haves.length > 0 ? haves.join(", ") : "Nenhuma ainda 😢";
-        text += `\n\n❌ *ME FALTAM (${missings.length}):*\n`;
-        text += missings.length > 0 ? missings.join(", ") : "ÁLBUM COMPLETO! 🎉";
+        
+        text += `✅ *JÁ TENHO (${totalHavesCount}):*\n`;
+        text += haveTextLines.length > 0 ? haveTextLines.join("\n") : "Nenhuma ainda 😢";
+        
+        text += `\n\n❌ *ME FALTAM (${totalMissingsCount}):*\n`;
+        text += missingTextLines.length > 0 ? missingTextLines.join("\n") : "ÁLBUM COMPLETO! 🎉";
+        
         text += `\n\n_Gerado por Copa Tracker 26_ 🏆`;
 
         navigator.clipboard.writeText(text).then(() => {
-            alert("Copa Tracker 26 diz:\n\nLista completa (Tenho/Faltam) copiada para a área de transferência! Só colar para seu amigo. 📋🚀");
+            alert("Copa Tracker 26 diz:\n\nLista com Bandeiras copiada com sucesso! Prontinha para enviar. 📋🚀");
         });
     }
 
