@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Group Share</title>
+    <title>Copa 26 Tracker - Full Stats</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
@@ -23,7 +23,7 @@
         .repeat-panel { background: #f1f1f1; padding: 12px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
         .progress-container { width: 100%; background: #eee; border-radius: 20px; height: 12px; margin-bottom: 8px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(to right, var(--usa-blue), var(--mex-green)); width: 0%; transition: 0.5s; }
-        #stats { font-size: 0.85em; font-weight: 900; margin-bottom: 10px; color: #333; }
+        #stats { font-size: 0.8em; font-weight: 900; margin-bottom: 10px; color: #333; text-transform: uppercase; letter-spacing: 0.5px; }
         .filter-bar { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
         .btn-filter { background: white; border: 2px solid #eee; color: #777; padding: 8px 15px; border-radius: 25px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
         .btn-filter.active { background: var(--usa-blue); color: white; border-color: var(--usa-blue); }
@@ -90,11 +90,11 @@
 
     const isoToEmoji = {
         "mx": "🇲🇽", "za": "🇿🇦", "kr": "🇰🇷", "cz": "🇨🇿", "ca": "🇨🇦", "ba": "🇧🇦", "qa": "🇶🇦", "ch": "🇨🇭",
-        "br": "🇧🇷", "ma": "🇲🇦", "ht": "🇭🇦", "gb-sct": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "us": "🇺🇸", "py": "🇵🇾", "au": "🇦🇺", "tr": "🇹🇷",
-        "de": "🇩🇪", "cw": "🇨🇼", "ci": "🇨🇮", "ec": "🇪🇨", "nl": "🇳🇱", "jp": "🇯🇵", "se": "\uD83C\uDDFE\uD83C\uDDEA", "tn": "🇹🇳",
+        "br": "🇧🇷", "ma": "🇲🇦", "ht": "🇭🇦", "gb-sct": "🏴\uD83C\uDDE7\uD83C\uDDF3\uD83C\uDDE8\uD83C\uDDF9", "us": "🇺🇸", "py": "🇵🇾", "au": "🇦🇺", "tr": "🇹🇷",
+        "de": "🇩🇪", "cw": "🇨🇼", "ci": "🇨🇮", "ec": "🇪🇨", "nl": "🇳🇱", "jp": "🇯🇵", "se": "🇸🇪", "tn": "🇹🇳",
         "be": "🇧🇪", "eg": "🇪🇬", "ir": "🇮🇷", "nz": "🇳🇿", "es": "🇪🇸", "cv": "🇨🇻", "sa": "🇸🇦", "uy": "🇺🇾",
         "fr": "🇫🇷", "sn": "🇸🇳", "iq": "🇮🇶", "no": "🇳🇴", "ar": "🇦🇷", "dz": "🇩🇿", "at": "🇦🇹", "jo": "🇯🇴",
-        "pt": "🇵🇹", "cd": "🇨🇩", "uz": "🇺🇿", "co": "🇨🇴", "gb-eng": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "hr": "🇭🇷", "gh": "🇬🇭", "pa": "🇵🇦"
+        "pt": "🇵🇹", "cd": "🇨🇩", "uz": "🇺🇿", "co": "🇨🇴", "gb-eng": "🏴\uD83C\uDDE7\uD83C\uDDF3\uD83C\uDDE1\uD83C\uDDF7", "hr": "🇭🇷", "gh": "🇬🇭", "pa": "🇵🇦"
     };
 
     const albumData = [
@@ -203,7 +203,6 @@
         navigator.clipboard.writeText(text).then(() => { alert("Lista copiada! 🚀"); });
     }
 
-    // 📋 FUNÇÃO REVISADA: ORGANIZA EM GRUPOS NA ORDEM FÍSICA DO ÁLBUM
     function generateFullAlbumList() {
         let totalHavesCount = 0;
         let totalMissingsCount = 0;
@@ -243,30 +242,24 @@
                 }
             });
 
-            // Se esse grupo contiver alguma figurinha que eu "Tenho", cria o cabeçalho dele
             if(groupHaveLines.length > 0) {
                 haveText += `\n── *${g.group}* ──\n` + groupHaveLines.join("\n") + "\n";
             }
-            // Se esse grupo contiver alguma figurinha que me "Falta", cria o cabeçalho dele
             if(groupMissingLines.length > 0) {
                 missingText += `\n── *${g.group}* ──\n` + groupMissingLines.join("\n") + "\n";
             }
         });
 
         let text = `📋 *STATUS DO ÁLBUM - COPA 26*\n──────────────────\n\n`;
-        
         text += `✅ *JÁ TENHO (${totalHavesCount}):*\n`;
         text += totalHavesCount > 0 ? haveText : "\nNenhuma ainda 😢\n";
-        
         text += `\n──────────────────\n\n`;
-        
         text += `❌ *ME FALTAM (${totalMissingsCount}):*\n`;
         text += totalMissingsCount > 0 ? missingText : "\nÁLBUM COMPLETO! 🎉\n";
-        
         text += `\n_Gerado por Copa Tracker 26_ 🏆`;
 
         navigator.clipboard.writeText(text).then(() => {
-            alert("Copa Tracker 26 diz:\n\nLista organizada por GRUPOS copiada com sucesso! Pronta para mandar pro whats. 📋🔥");
+            alert("Lista copiada por grupos! 📋🔥");
         });
     }
 
@@ -325,8 +318,12 @@
         });
         
         let p = (total > 0) ? (haveCount/total*100).toFixed(1) : 0;
+        let missingCount = total - haveCount; // Conta quantas faltam
+        
         document.getElementById('pb').style.width = p + "%";
-        document.getElementById('stats').innerText = `${haveCount} / ${total} FIGURINHAS (${p}%) | REPETIDAS: ${repArr.length}`;
+        
+        // Texto atualizado com "temos xxx de xxx e faltam xxx"
+        document.getElementById('stats').innerHTML = `Temos <b>${haveCount}</b> de <b>${total}</b> figurinhas (${p}%) | <b>Faltam: ${missingCount}</b> | Repetidas: ${repArr.length}`;
     }
     render();
 </script>
