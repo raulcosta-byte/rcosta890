@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Copa 26 Tracker - Full Stats</title>
+    <title>Copa 26 Tracker - Perfect Share</title>
     <style>
         :root { 
             --usa-blue: #002868; --can-red: #ef3340; --mex-green: #006341;
@@ -90,11 +90,11 @@
 
     const isoToEmoji = {
         "mx": "🇲🇽", "za": "🇿🇦", "kr": "🇰🇷", "cz": "🇨🇿", "ca": "🇨🇦", "ba": "🇧🇦", "qa": "🇶🇦", "ch": "🇨🇭",
-        "br": "🇧🇷", "ma": "🇲🇦", "ht": "🇭🇦", "gb-sct": "🏴\uD83C\uDDE7\uD83C\uDDF3\uD83C\uDDE8\uD83C\uDDF9", "us": "🇺🇸", "py": "🇵🇾", "au": "🇦🇺", "tr": "🇹🇷",
+        "br": "🇧🇷", "ma": "🇲🇦", "ht": "🇭🇦", "gb-sct": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "us": "🇺🇸", "py": "🇵🇾", "au": "🇦🇺", "tr": "🇹🇷",
         "de": "🇩🇪", "cw": "🇨🇼", "ci": "🇨🇮", "ec": "🇪🇨", "nl": "🇳🇱", "jp": "🇯🇵", "se": "🇸🇪", "tn": "🇹🇳",
         "be": "🇧🇪", "eg": "🇪🇬", "ir": "🇮🇷", "nz": "🇳🇿", "es": "🇪🇸", "cv": "🇨🇻", "sa": "🇸🇦", "uy": "🇺🇾",
         "fr": "🇫🇷", "sn": "🇸🇳", "iq": "🇮🇶", "no": "🇳🇴", "ar": "🇦🇷", "dz": "🇩🇿", "at": "🇦🇹", "jo": "🇯🇴",
-        "pt": "🇵🇹", "cd": "🇨🇩", "uz": "🇺🇿", "co": "🇨🇴", "gb-eng": "🏴\uD83C\uDDE7\uD83C\uDDF3\uD83C\uDDE1\uD83C\uDDF7", "hr": "🇭🇷", "gh": "🇬🇭", "pa": "🇵🇦"
+        "pt": "🇵🇹", "cd": "🇨🇩", "uz": "🇺🇿", "co": "🇨🇴", "gb-eng": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "hr": "🇭🇷", "gh": "🇬🇭", "pa": "🇵🇦"
     };
 
     const albumData = [
@@ -193,14 +193,51 @@
         reader.readAsText(file);
     }
 
-    function resetData() { if(confirm("Deseja ZERAR TODA a sua lista?")) {db={};save();location.reload();}}
+    function resetData() { if(confirm("Deseja ZERAR TADA a sua lista?")) {db={};save();location.reload();}}
 
+    // 🔄 REVISADA: GERAR REPETIDAS EM GRUPOS NA ORDEM FÍSICA DO ÁLBUM
     function generateShareList() {
-        let reps = [];
-        for (let id in db) { if (db[id] === 'repeat') reps.push(id); }
-        if (reps.length === 0) { alert("Nenhuma repetida para trocar."); return; }
-        let text = `⚽ *REPETIDAS - COPA 26*\n──────────────────\n🔥 Tenho *${reps.length}* figurinhas para troca!\n\n${reps.sort().join(", ")}\n\n_Gerado por Copa Tracker 26_ 🏆`;
-        navigator.clipboard.writeText(text).then(() => { alert("Lista copiada! 🚀"); });
+        let totalRepsCount = 0;
+        let repeatText = "";
+
+        albumData.forEach(g => {
+            let groupRepLines = [];
+
+            g.teams.forEach(team => {
+                let teamReps = [];
+                let flagEmoji = team.isEmoji ? team.icon : (isoToEmoji[team.icon] || "🏳️");
+
+                let stickerIds = [];
+                if(team.custom) { team.custom.forEach(c => stickerIds.push(`${team.code} ${c}`)); }
+                else if (team.range) { for(let i = team.range[0]; i <= team.range[1]; i++) { stickerIds.push(`${team.code} ${i<10?'0'+i:i}`); } }
+                else { for(let i = 1; i <= team.total; i++) { stickerIds.push(`${team.code} ${i<10?'0'+i:i}`); } }
+
+                stickerIds.forEach(id => {
+                    if (db[id] === 'repeat') {
+                        teamReps.push(id);
+                        totalRepsCount++;
+                    }
+                });
+
+                if(teamReps.length > 0) {
+                    groupRepLines.push(`${flagEmoji} *${team.name}:* ${teamReps.join(", ")}`);
+                }
+            });
+
+            if(groupRepLines.length > 0) {
+                repeatText += `\n── *${g.group}* ──\n` + groupRepLines.join("\n") + "\n";
+            }
+        });
+
+        if (totalRepsCount === 0) { alert("Copa Tracker 26 diz:\n\nNenhuma repetida para trocar."); return; }
+
+        let text = `⚽ *REPETIDAS - COPA 26*\n──────────────────\n🔥 Tenho *${totalRepsCount}* figurinhas para troca!\n`;
+        text += repeatText;
+        text += `\n_Gerado por Copa Tracker 26_ 🏆`;
+
+        navigator.clipboard.writeText(text).then(() => { 
+            alert("Copa Tracker 26 diz:\n\nLista de repetidas por grupos copiada! 🚀"); 
+        });
     }
 
     function generateFullAlbumList() {
@@ -318,11 +355,9 @@
         });
         
         let p = (total > 0) ? (haveCount/total*100).toFixed(1) : 0;
-        let missingCount = total - haveCount; // Conta quantas faltam
+        let missingCount = total - haveCount;
         
         document.getElementById('pb').style.width = p + "%";
-        
-        // Texto atualizado com "temos xxx de xxx e faltam xxx"
         document.getElementById('stats').innerHTML = `Temos <b>${haveCount}</b> de <b>${total}</b> figurinhas (${p}%) | <b>Faltam: ${missingCount}</b> | Repetidas: ${repArr.length}`;
     }
     render();
